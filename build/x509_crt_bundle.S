@@ -1,4 +1,4 @@
-/* * Data converted from C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

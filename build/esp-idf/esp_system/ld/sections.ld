@@ -1,6 +1,6 @@
 /* Automatically generated file; DO NOT EDIT */
 /* Espressif IoT Development Framework Linker Script */
-/* Generated from: C:\WORK\Firmware\ESP32-POE\SOFTWARE\ESP-IDF\ESP32_PoE_Ethernet_IDFv5.3\build\esp-idf\esp_system\ld\sections.ld.in */
+/* Generated from: C:\WORK\Firmware\ESP32_PoE_Ethernet_IDFv5.3\build\esp-idf\esp_system\ld\sections.ld.in */
 
 /*
 

@@ -10,18 +10,18 @@ if(NOT EXISTS "C:/Users/Notebook/esp/v5.3/esp-idf/components/bootloader/subproje
   file(MAKE_DIRECTORY "C:/Users/Notebook/esp/v5.3/esp-idf/components/bootloader/subproject")
 endif()
 file(MAKE_DIRECTORY
-  "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader"
-  "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix"
-  "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/tmp"
-  "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp"
-  "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src"
-  "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader"
+  "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix"
+  "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/tmp"
+  "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp"
+  "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src"
+  "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

@@ -1,4 +1,4 @@
-/* * Data converted from C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/main/html/assets/images/favicon.ico
+/* * Data converted from C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/main/html/assets/images/favicon.ico
  */
 .data
 #if !defined (__APPLE__) && !defined (__linux__)

@@ -3,3 +3,4 @@
 
 bool status_view(char *response, size_t max_len);
 const char *get_settings();
+const char *set_settings(const char *data);

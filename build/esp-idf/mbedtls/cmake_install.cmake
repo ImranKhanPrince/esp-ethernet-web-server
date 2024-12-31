@@ -39,6 +39,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/mbedtls/mbedtls/cmake_install.cmake")
+  include("C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/mbedtls/mbedtls/cmake_install.cmake")
 endif()
 

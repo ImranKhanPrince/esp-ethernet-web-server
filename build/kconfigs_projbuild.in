@@ -3,4 +3,4 @@ source "C:/Users/Notebook/esp/v5.3/esp-idf/components/esp_app_format/Kconfig.pro
 source "C:/Users/Notebook/esp/v5.3/esp-idf/components/esp_rom/Kconfig.projbuild"
 source "C:/Users/Notebook/esp/v5.3/esp-idf/components/esptool_py/Kconfig.projbuild"
 source "C:/Users/Notebook/esp/v5.3/esp-idf/components/partition_table/Kconfig.projbuild"
-source "C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/components/ethernet_init/Kconfig.projbuild"
+source "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/ethernet_init/Kconfig.projbuild"

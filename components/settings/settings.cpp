@@ -3,6 +3,8 @@
 #include "driver.h"
 
 // THIS FILE WILL NOT RETURN ANY JSON INSTED IT WILL RETURN STRUCTS AND ARRAYS
+// Create a UART Mutex that controls the access of the UHF module UART otherwise parallel processing 2 route will cause issue
+// use nvs to keep all the settigns data. keep nvs applications in another component just call the helpers from here.
 
 static rfm_settings_all_t settings_ = {
     .device_id = 1,
@@ -19,12 +21,13 @@ static rfm_settings_all_t settings_ = {
 
 rfm_settings_all_t *get_settings_data()
 {
+  // These functions Gets called one at a time which is handled by the http_server component. so no worry of concurrency.
+  // However if wanted we can use Tasks then it will be concurrent.
+
   // TODO: Create a device tree struct where you can find the status of each devices
 
   ReaderInfo ri;
   GetSettings(&ri);
-  printf("LOG: get_settings_data is getting called\n");
-  fflush(stdout);
 
   settings_.min_freq = ri.MinFreq;
   settings_.max_freq = ri.MaxFreq;
@@ -35,4 +38,24 @@ rfm_settings_all_t *get_settings_data()
 
   printsettings(&ri);
   return &settings_;
+}
+
+SET_SETTINGS_STATUS set_settings_data(const rfm_settings_saveable_t *settings)
+{
+  ReaderInfo ri;
+  ri.Band = settings->rf_band;
+  ri.Power = settings->rf_power;
+  ri.ScanTime = settings->rf_scan_period / 100;
+  ri.BeepOn = settings->device_beep;
+  ri.BaudRate = 115200;
+
+  // TODO: USE Mutex to lock the UART
+  if (SetSettings(&ri))
+  {
+    return SET_SETTINGS_SUCCESS;
+  }
+  else
+  {
+    return SET_SETTINGS_FAIL;
+  }
 }

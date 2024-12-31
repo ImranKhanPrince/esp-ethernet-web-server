@@ -1,4 +1,4 @@
-# Install script for directory: C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/components/settings
+# Install script for directory: C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -18,8 +18,8 @@ end
 
 # Load bootloader symbols
 set confirm off
-    add-symbol-file C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader/bootloader.elf
+    add-symbol-file C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader/bootloader.elf
 set confirm on
 
 # Load application symbols
-file C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/ethernet_basic.elf
+file C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/ethernet_basic.elf

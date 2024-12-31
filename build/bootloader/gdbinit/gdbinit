@@ -1,2 +1,2 @@
-source C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader/gdbinit/symbols
-source C:/WORK/Firmware/ESP32-POE/SOFTWARE/ESP-IDF/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader/gdbinit/connect
+source C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader/gdbinit/symbols
+source C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/bootloader/gdbinit/connect

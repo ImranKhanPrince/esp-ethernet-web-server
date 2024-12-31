@@ -3,7 +3,15 @@
 #include "esp_http_server.h"
 #include "esp_log.h"
 
+#include <stddef.h> // Add this include for size_t
+#include "math.h"
+
 #include "api_json.h"
+
+// min is having some issue so manual min here
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
 
 static const char *TAG = "HTTP_SERVER";
 
@@ -51,6 +59,7 @@ esp_err_t handle_favicon(httpd_req_t *req)
   return ESP_OK;
 }
 
+// TODO: all the settings realted things verify the key and encryption first if matches then do any operation. else sen 404
 esp_err_t handle_api_root(httpd_req_t *req)
 {
   char *json_response[20];
@@ -68,6 +77,52 @@ esp_err_t handle_get_settings(httpd_req_t *req)
   httpd_resp_send(req, json_response, strlen(json_response));
   return ESP_OK;
 }
+
+esp_err_t handle_post_settings(httpd_req_t *req)
+{
+  /* Destination buffer for content of HTTP POST request.
+   * httpd_req_recv() accepts char* only, but content could
+   * as well be any binary data (needs type casting).
+   * In case of string data, null termination will be absent, and
+   * content length would give length of string */
+
+  // TODO: find way better way to allocate the buffer
+
+  char content[req->content_len];
+
+  if (req->content_len > 1000)
+  {
+    ESP_LOGE(TAG, "Content length is too large");
+    httpd_resp_send_404(req);
+    return ESP_FAIL;
+  }
+
+  int ret = httpd_req_recv(req, content, req->content_len);
+  if (ret <= 0)
+  { /* 0 return value indicates connection closed */
+    /* Check if timeout occurred */
+    if (ret == HTTPD_SOCK_ERR_TIMEOUT)
+    {
+      /* In case of timeout one can choose to retry calling
+       * httpd_req_recv(), but to keep it simple, here we
+       * respond with an HTTP 408 (Request Timeout) error */
+      httpd_resp_send_408(req);
+    }
+    /* In case of error, returning ESP_FAIL will
+     * ensure that the underlying socket is closed */
+    return ESP_FAIL;
+  }
+
+  /* Send a simple response */
+
+  char *resp = set_settings(content);
+  // TODO: this content will come from model -> view
+  httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
+  return ESP_OK;
+}
+
+// TODO: the names will be set operations setting and gt operations setting for the scan and data related settings
+// TODO: TO give forward slash at the end or to not give that is the question.
 
 void start_web_server()
 {
@@ -97,6 +152,12 @@ void start_web_server()
         .method = HTTP_GET,
         .handler = handle_get_settings};
     httpd_register_uri_handler(server, &api_get_settings_uri);
+
+    httpd_uri_t api_post_settings_uri = {
+        .uri = "/api/settings",
+        .method = HTTP_POST,
+        .handler = handle_post_settings};
+    httpd_register_uri_handler(server, &api_post_settings_uri);
 
     httpd_uri_t css_uri = {
         .uri = "/assets/styles/style.css",
