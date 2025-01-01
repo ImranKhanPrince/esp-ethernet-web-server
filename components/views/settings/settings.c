@@ -77,14 +77,15 @@ const char *set_settings(const char *data)
 {
   printf("LOG: Data: %s\n", data);
   cJSON *root = cJSON_Parse(data);
-  char *data_json = cJSON_Print(root);
-
-  printf("LOG: Data_json: %s\n", data_json);
 
   if (root == NULL)
   {
+    printf("LOG: Invalid JSON FORMAT\n");
     return NULL;
   }
+
+  char *data_json = cJSON_Print(root);
+  printf("LOG: Data_json: %s\n", data_json);
 
   // Extract the "data" object from the input JSON
   cJSON *data_object = cJSON_GetObjectItem(root, "data");

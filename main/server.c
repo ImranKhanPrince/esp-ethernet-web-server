@@ -116,6 +116,15 @@ esp_err_t handle_post_settings(httpd_req_t *req)
   /* Send a simple response */
 
   char *resp = set_settings(content);
+  if (resp == NULL)
+  {
+    // TODO: fix the error handling to send 400 and error message json
+    //  Send the complete response in one go
+    httpd_resp_send(req, "{\"error\":\"Invalid JSON\"}\n", HTTPD_RESP_USE_STRLEN);
+
+    // Return ESP_OK to indicate the response was handled
+    return ESP_OK;
+  }
   // TODO: this content will come from model -> view
   httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
   return ESP_OK;
