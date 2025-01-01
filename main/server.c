@@ -123,6 +123,7 @@ esp_err_t handle_post_settings(httpd_req_t *req)
 
 // TODO: the names will be set operations setting and gt operations setting for the scan and data related settings
 // TODO: TO give forward slash at the end or to not give that is the question.
+// TODO: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
 
 void start_web_server()
 {

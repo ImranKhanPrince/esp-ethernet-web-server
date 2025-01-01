@@ -42,6 +42,24 @@ rfm_settings_all_t *get_settings_data()
 
 SET_SETTINGS_STATUS set_settings_data(const rfm_settings_saveable_t *settings)
 {
+
+  if (settings->rf_band != 'U' && settings->rf_band != 'E' && settings->rf_band != 'C' && settings->rf_band != 'K')
+  {
+    return SET_SETTINGS_INVALID_BAND;
+  }
+  if (settings->rf_power < 0 || settings->rf_power > 30)
+  {
+    return SET_SETTINGS_INVALID_POWER;
+  }
+  if (settings->rf_scan_period < 300 || settings->rf_scan_period > 25500)
+  {
+    return SET_SETTINGS_INVALID_SCAN_PERIOD;
+  }
+  if (settings->device_beep != true && settings->device_beep != false)
+  {
+    return SET_SETTINGS_INVALID_BEEP;
+  }
+
   ReaderInfo ri;
   ri.Band = settings->rf_band;
   ri.Power = settings->rf_power;
