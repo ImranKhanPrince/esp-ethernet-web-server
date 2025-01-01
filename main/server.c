@@ -115,6 +115,7 @@ esp_err_t handle_post_settings(httpd_req_t *req)
 
   /* Send a simple response */
 
+  httpd_resp_set_type(req, "application/json");
   char *resp = set_settings(content);
   if (resp == NULL)
   {

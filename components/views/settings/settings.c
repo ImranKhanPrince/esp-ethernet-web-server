@@ -89,7 +89,7 @@ const char *set_settings(const char *data)
 
   // Extract the "data" object from the input JSON
   cJSON *data_object = cJSON_GetObjectItem(root, "data");
-  // TODO: HERE LIES THE PROBLEM print and verify req -> json ->> stripped json ->> new json
+
   if (data_object == NULL)
   {
     cJSON_Delete(root);
@@ -130,7 +130,37 @@ const char *set_settings(const char *data)
   SET_SETTINGS_STATUS status = set_settings_data(&setting_s);
   if (status != SET_SETTINGS_SUCCESS)
   {
-    return "Failed to update settings";
+    cJSON *error_object = cJSON_CreateObject();
+
+    if (status == SET_SETTINGS_INVALID_BAND)
+    {
+      cJSON_AddStringToObject(error_object, "error", "Invalid RF Band");
+      char *error_json = cJSON_PrintUnformatted(error_object);
+      // strcat(error_json, "\n");
+      cJSON_Delete(error_object);
+      return error_json;
+    }
+    else if (status == SET_SETTINGS_INVALID_POWER)
+    {
+      return "Invalid RF Power";
+    }
+    else if (status == SET_SETTINGS_INVALID_SCAN_PERIOD)
+    {
+      return "Invalid RF Scan Period";
+    }
+    else if (status == SET_SETTINGS_INVALID_BEEP)
+    {
+      return "Invalid Device Beep";
+    }
+    else if (status == SET_SETTINGS_FAIL)
+    {
+      return "Failed! Try again";
+    }
+    else
+    {
+      return "Unknown Error";
+    }
   }
-  return "Settings Updated Successfully";
+
+  return "{\"success\":\"Settings set successfully.\"}\n";
 }
