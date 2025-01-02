@@ -19,7 +19,13 @@ static rfm_settings_all_t settings_ = {
     .rf_scan_period = 1000, // ms
     .device_beep = true};
 
-rfm_settings_all_t *get_settings_data()
+static device_func_status_t functionality_status_ = {
+    .scan_mode = SCAN_OFF,
+    .scan_interval = 0,
+    .data_output_loc = "none",
+    .trigger = NO_TRIGGER};
+
+rfm_settings_all_t *get_device_settings()
 {
   // These functions Gets called one at a time which is handled by the http_server component. so no worry of concurrency.
   // However if wanted we can use Tasks then it will be concurrent.
@@ -40,7 +46,7 @@ rfm_settings_all_t *get_settings_data()
   return &settings_;
 }
 
-SET_SETTINGS_STATUS set_settings_data(const rfm_settings_saveable_t *settings)
+SET_SETTINGS_STATUS set_device_settings(const rfm_settings_saveable_t *settings)
 {
 
   if (settings->rf_band != 'U' && settings->rf_band != 'E' && settings->rf_band != 'C' && settings->rf_band != 'K')
@@ -76,4 +82,16 @@ SET_SETTINGS_STATUS set_settings_data(const rfm_settings_saveable_t *settings)
   {
     return SET_SETTINGS_FAIL;
   }
+}
+
+SET_DEVICE_SETTING_STATUS set_device_func_settings(const device_func_status_t *settings)
+{
+  functionality_status_.scan_mode = settings->scan_mode;
+  functionality_status_.scan_interval = settings->scan_interval;
+  strncpy(functionality_status_.data_output_loc, settings->data_output_loc, sizeof(functionality_status_.data_output_loc) - 1);
+  functionality_status_.trigger = settings->trigger;
+
+  // TODO: Save the settings to the NVS
+  printf("LOG: model called\n");
+  return SET_DEVICE_SETTINGS_SUCCESS;
 }

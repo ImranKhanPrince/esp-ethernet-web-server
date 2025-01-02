@@ -131,6 +131,38 @@ esp_err_t handle_post_settings(httpd_req_t *req)
   return ESP_OK;
 }
 
+esp_err_t handle_post_func_settings(httpd_req_t *req)
+{
+  httpd_resp_set_type(req, "application/json");
+  char content[req->content_len];
+
+  if (req->content_len > 1000)
+  {
+    ESP_LOGE(TAG, "Content length is too large");
+    httpd_resp_send_404(req);
+    return ESP_FAIL;
+  }
+
+  int ret = httpd_req_recv(req, content, req->content_len);
+  if (ret <= 0)
+  {
+    if (ret == HTTPD_SOCK_ERR_TIMEOUT)
+    {
+      httpd_resp_send_408(req);
+    }
+    return ESP_FAIL;
+  }
+
+  char *resp = set_func_settings(content);
+  if (resp == NULL)
+  {
+    httpd_resp_send(req, "{\"error\":\"Invalid JSON\"}\n", HTTPD_RESP_USE_STRLEN);
+    return ESP_OK;
+  }
+  httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
+  return ESP_OK;
+}
+
 // TODO: the names will be set operations setting and gt operations setting for the scan and data related settings
 // TODO: TO give forward slash at the end or to not give that is the question.
 // TODO: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
@@ -169,6 +201,11 @@ void start_web_server()
         .method = HTTP_POST,
         .handler = handle_post_settings};
     httpd_register_uri_handler(server, &api_post_settings_uri);
+    httpd_uri_t api_post_func_settings_uri = {
+        .uri = "/api/func_settings",
+        .method = HTTP_POST,
+        .handler = handle_post_func_settings};
+    httpd_register_uri_handler(server, &api_post_func_settings_uri);
 
     httpd_uri_t css_uri = {
         .uri = "/assets/styles/style.css",

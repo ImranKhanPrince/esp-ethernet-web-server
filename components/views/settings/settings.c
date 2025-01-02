@@ -8,7 +8,7 @@
 
 const char *get_settings()
 {
-  rfm_settings_all_t *settings = get_settings_data();
+  rfm_settings_all_t *settings = get_device_settings();
   cJSON *root_object = cJSON_CreateObject();
   if (root_object == NULL)
   {
@@ -127,7 +127,7 @@ const char *set_settings(const char *data)
   cJSON_Delete(root);
 
   //  process the data into a struct then pass that to model/settings/peripheral to write the settings
-  SET_SETTINGS_STATUS status = set_settings_data(&setting_s);
+  SET_SETTINGS_STATUS status = set_device_settings(&setting_s);
   if (status != SET_SETTINGS_SUCCESS)
   {
     cJSON *error_object = cJSON_CreateObject();
@@ -162,5 +162,62 @@ const char *set_settings(const char *data)
     }
   }
 
+  return "{\"success\":\"Settings set successfully.\"}\n";
+}
+
+const char *set_func_settings(const char *data)
+{
+  cJSON *root_object = cJSON_Parse(data);
+  if (root_object == NULL)
+  {
+    return NULL;
+  }
+  device_func_status_t device_function_stat;
+
+  cJSON *scan_mode = cJSON_GetObjectItem(root_object, "scan_mode");
+  if (cJSON_IsNumber(scan_mode))
+  {
+    device_function_stat.scan_mode = scan_mode->valueint;
+  }
+  else
+  {
+    return "{\"error\":\"Invalid scan_mode format\"}\n";
+  }
+
+  cJSON *scan_interval = cJSON_GetObjectItem(root_object, "scan_interval");
+  if (cJSON_IsNumber(scan_interval))
+  {
+    device_function_stat.scan_interval = scan_interval->valueint;
+  }
+  else
+  {
+    return "{\"error\":\"Invalid scan_interval format\"}\n";
+  }
+
+  cJSON *data_output_loc = cJSON_GetObjectItem(root_object, "data_output_loc");
+  if (cJSON_IsString(data_output_loc) && (data_output_loc->valuestring != NULL))
+  {
+    // TODO: check the size of the string and return error if it is too long
+    strncpy(device_function_stat.data_output_loc, data_output_loc->valuestring, sizeof(device_function_stat.data_output_loc) - 1);
+    device_function_stat.data_output_loc[sizeof(device_function_stat.data_output_loc) - 1] = '\0'; // Ensure null-termination
+  }
+  else
+  {
+    return "{\"error\":\"Invalid data_output_loc format\"}\n";
+  }
+
+  cJSON *trigger = cJSON_GetObjectItem(root_object, "trigger");
+  if (cJSON_IsNumber(trigger))
+  {
+    device_function_stat.trigger = trigger->valueint;
+  }
+  else
+  {
+    return "{\"error\":\"Invalid trigger format\"}\n";
+  }
+  cJSON_Delete(root_object);
+  set_device_func_settings(&device_function_stat); // call to model
+
+  printf("LOG: Data: %s\n", data);
   return "{\"success\":\"Settings set successfully.\"}\n";
 }
