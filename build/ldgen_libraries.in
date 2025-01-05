@@ -82,5 +82,6 @@ $<TARGET_FILE:__idf_wifi_provisioning>
 $<TARGET_FILE:__idf_main>
 $<TARGET_FILE:__idf_ethernet_init>
 $<TARGET_FILE:__idf_j4210u-driver_esp5.3>
-$<TARGET_FILE:__idf_settings>
+$<TARGET_FILE:__idf_settings_model>
+$<TARGET_FILE:__idf_scan>
 $<TARGET_FILE:__idf_views>
