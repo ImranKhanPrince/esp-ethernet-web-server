@@ -16,32 +16,34 @@
 static const char *TAG = "example_eth_init";
 
 #if CONFIG_EXAMPLE_SPI_ETHERNETS_NUM
-#define SPI_ETHERNETS_NUM           CONFIG_EXAMPLE_SPI_ETHERNETS_NUM
+#define SPI_ETHERNETS_NUM CONFIG_EXAMPLE_SPI_ETHERNETS_NUM
 #else
-#define SPI_ETHERNETS_NUM           0
+#define SPI_ETHERNETS_NUM 0
 #endif
 
 #if CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
-#define INTERNAL_ETHERNETS_NUM      1
+#define INTERNAL_ETHERNETS_NUM 1
 #else
-#define INTERNAL_ETHERNETS_NUM      0
+#define INTERNAL_ETHERNETS_NUM 0
 #endif
 
-#define INIT_SPI_ETH_MODULE_CONFIG(eth_module_config, num)                                      \
-    do {                                                                                        \
-        eth_module_config[num].spi_cs_gpio = CONFIG_EXAMPLE_ETH_SPI_CS ##num## _GPIO;           \
-        eth_module_config[num].int_gpio = CONFIG_EXAMPLE_ETH_SPI_INT ##num## _GPIO;             \
-        eth_module_config[num].phy_reset_gpio = CONFIG_EXAMPLE_ETH_SPI_PHY_RST ##num## _GPIO;   \
-        eth_module_config[num].phy_addr = CONFIG_EXAMPLE_ETH_SPI_PHY_ADDR ##num;                \
-    } while(0)
+#define INIT_SPI_ETH_MODULE_CONFIG(eth_module_config, num)                                  \
+    do                                                                                      \
+    {                                                                                       \
+        eth_module_config[num].spi_cs_gpio = CONFIG_EXAMPLE_ETH_SPI_CS##num##_GPIO;         \
+        eth_module_config[num].int_gpio = CONFIG_EXAMPLE_ETH_SPI_INT##num##_GPIO;           \
+        eth_module_config[num].phy_reset_gpio = CONFIG_EXAMPLE_ETH_SPI_PHY_RST##num##_GPIO; \
+        eth_module_config[num].phy_addr = CONFIG_EXAMPLE_ETH_SPI_PHY_ADDR##num;             \
+    } while (0)
 
-typedef struct {
+typedef struct
+{
     uint8_t spi_cs_gpio;
     uint8_t int_gpio;
     int8_t phy_reset_gpio;
     uint8_t phy_addr;
     uint8_t *mac_addr;
-}spi_eth_module_config_t;
+} spi_eth_module_config_t;
 
 #if CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
 /**
@@ -92,23 +94,28 @@ static esp_eth_handle_t eth_init_internal(esp_eth_mac_t **mac_out, esp_eth_phy_t
     esp_eth_handle_t eth_handle = NULL;
     esp_eth_config_t config = ETH_DEFAULT_CONFIG(mac, phy);
     ESP_GOTO_ON_FALSE(esp_eth_driver_install(&config, &eth_handle) == ESP_OK, NULL,
-                        err, TAG, "Ethernet driver install failed");
+                      err, TAG, "Ethernet driver install failed");
 
-    if (mac_out != NULL) {
+    if (mac_out != NULL)
+    {
         *mac_out = mac;
     }
-    if (phy_out != NULL) {
+    if (phy_out != NULL)
+    {
         *phy_out = phy;
     }
     return eth_handle;
 err:
-    if (eth_handle != NULL) {
+    if (eth_handle != NULL)
+    {
         esp_eth_driver_uninstall(eth_handle);
     }
-    if (mac != NULL) {
+    if (mac != NULL)
+    {
         mac->del(mac);
     }
-    if (phy != NULL) {
+    if (phy != NULL)
+    {
         phy->del(phy);
     }
     return ret;
@@ -128,11 +135,15 @@ static esp_err_t spi_bus_init(void)
 
     // Install GPIO ISR handler to be able to service SPI Eth modules interrupts
     ret = gpio_install_isr_service(0);
-    if (ret != ESP_OK) {
-        if (ret == ESP_ERR_INVALID_STATE) {
+    if (ret != ESP_OK)
+    {
+        if (ret == ESP_ERR_INVALID_STATE)
+        {
             ESP_LOGW(TAG, "GPIO ISR handler has been already installed");
             ret = ESP_OK; // ISR handler has been already installed so no issues
-        } else {
+        }
+        else
+        {
             ESP_LOGE(TAG, "GPIO ISR handler install failed");
             goto err;
         }
@@ -147,7 +158,7 @@ static esp_err_t spi_bus_init(void)
         .quadhd_io_num = -1,
     };
     ESP_GOTO_ON_ERROR(spi_bus_initialize(CONFIG_EXAMPLE_ETH_SPI_HOST, &buscfg, SPI_DMA_CH_AUTO),
-                        err, TAG, "SPI host #%d init failed", CONFIG_EXAMPLE_ETH_SPI_HOST);
+                      err, TAG, "SPI host #%d init failed", CONFIG_EXAMPLE_ETH_SPI_HOST);
 
 err:
     return ret;
@@ -180,8 +191,7 @@ static esp_eth_handle_t eth_init_spi(spi_eth_module_config_t *spi_eth_module_con
         .mode = 0,
         .clock_speed_hz = CONFIG_EXAMPLE_ETH_SPI_CLOCK_MHZ * 1000 * 1000,
         .queue_size = 20,
-        .spics_io_num = spi_eth_module_config->spi_cs_gpio
-    };
+        .spics_io_num = spi_eth_module_config->spi_cs_gpio};
     // Init vendor specific MAC config to default, and create new SPI Ethernet MAC instance
     // and new PHY instance based on board configuration
 #if CONFIG_EXAMPLE_USE_KSZ8851SNL
@@ -199,40 +209,46 @@ static esp_eth_handle_t eth_init_spi(spi_eth_module_config_t *spi_eth_module_con
     w5500_config.int_gpio_num = spi_eth_module_config->int_gpio;
     esp_eth_mac_t *mac = esp_eth_mac_new_w5500(&w5500_config, &mac_config);
     esp_eth_phy_t *phy = esp_eth_phy_new_w5500(&phy_config);
-#endif //CONFIG_EXAMPLE_USE_W5500
+#endif // CONFIG_EXAMPLE_USE_W5500
     // Init Ethernet driver to default and install it
     esp_eth_handle_t eth_handle = NULL;
     esp_eth_config_t eth_config_spi = ETH_DEFAULT_CONFIG(mac, phy);
     ESP_GOTO_ON_FALSE(esp_eth_driver_install(&eth_config_spi, &eth_handle) == ESP_OK, NULL, err, TAG, "SPI Ethernet driver install failed");
 
     // The SPI Ethernet module might not have a burned factory MAC address, we can set it manually.
-    if (spi_eth_module_config->mac_addr != NULL) {
+    if (spi_eth_module_config->mac_addr != NULL)
+    {
         ESP_GOTO_ON_FALSE(esp_eth_ioctl(eth_handle, ETH_CMD_S_MAC_ADDR, spi_eth_module_config->mac_addr) == ESP_OK,
-                                        NULL, err, TAG, "SPI Ethernet MAC address config failed");
+                          NULL, err, TAG, "SPI Ethernet MAC address config failed");
     }
 
-    if (mac_out != NULL) {
+    if (mac_out != NULL)
+    {
         *mac_out = mac;
     }
-    if (phy_out != NULL) {
+    if (phy_out != NULL)
+    {
         *phy_out = phy;
     }
     return eth_handle;
 err:
-    if (eth_handle != NULL) {
+    if (eth_handle != NULL)
+    {
         esp_eth_driver_uninstall(eth_handle);
     }
-    if (mac != NULL) {
+    if (mac != NULL)
+    {
         mac->del(mac);
     }
-    if (phy != NULL) {
+    if (phy != NULL)
+    {
         phy->del(phy);
     }
     return ret;
 }
 #endif // CONFIG_EXAMPLE_USE_SPI_ETHERNET
 
-esp_err_t example_eth_init(esp_eth_handle_t *eth_handles_out[], uint8_t *eth_cnt_out)
+esp_err_t eth_init(esp_eth_handle_t *eth_handles_out[], uint8_t *eth_cnt_out)
 {
     esp_err_t ret = ESP_OK;
     esp_eth_handle_t *eth_handles = NULL;
@@ -240,7 +256,7 @@ esp_err_t example_eth_init(esp_eth_handle_t *eth_handles_out[], uint8_t *eth_cnt
 
 #if CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET || CONFIG_EXAMPLE_USE_SPI_ETHERNET
     ESP_GOTO_ON_FALSE(eth_handles_out != NULL && eth_cnt_out != NULL, ESP_ERR_INVALID_ARG,
-                        err, TAG, "invalid arguments: initialized handles array or number of interfaces");
+                      err, TAG, "invalid arguments: initialized handles array or number of interfaces");
     eth_handles = calloc(SPI_ETHERNETS_NUM + INTERNAL_ETHERNETS_NUM, sizeof(esp_eth_handle_t));
     ESP_GOTO_ON_FALSE(eth_handles != NULL, ESP_ERR_NO_MEM, err, TAG, "no memory");
 
@@ -248,12 +264,12 @@ esp_err_t example_eth_init(esp_eth_handle_t *eth_handles_out[], uint8_t *eth_cnt
     eth_handles[eth_cnt] = eth_init_internal(NULL, NULL);
     ESP_GOTO_ON_FALSE(eth_handles[eth_cnt], ESP_FAIL, err, TAG, "internal Ethernet init failed");
     eth_cnt++;
-#endif //CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
+#endif // CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
 
 #if CONFIG_EXAMPLE_USE_SPI_ETHERNET
     ESP_GOTO_ON_ERROR(spi_bus_init(), err, TAG, "SPI bus init failed");
     // Init specific SPI Ethernet module configuration from Kconfig (CS GPIO, Interrupt GPIO, etc.)
-    spi_eth_module_config_t spi_eth_module_config[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM] = { 0 };
+    spi_eth_module_config_t spi_eth_module_config[CONFIG_EXAMPLE_SPI_ETHERNETS_NUM] = {0};
     INIT_SPI_ETH_MODULE_CONFIG(spi_eth_module_config, 0);
     // The SPI Ethernet module(s) might not have a burned factory MAC address, hence use manually configured address(es).
     // In this example, Locally Administered MAC address derived from ESP32x base MAC address is used.
@@ -273,7 +289,8 @@ esp_err_t example_eth_init(esp_eth_handle_t *eth_handles_out[], uint8_t *eth_cnt
 #if CONFIG_EXAMPLE_SPI_ETHERNETS_NUM > 2
 #error Maximum number of supported SPI Ethernet devices is currently limited to 2 by this example.
 #endif
-    for (int i = 0; i < CONFIG_EXAMPLE_SPI_ETHERNETS_NUM; i++) {
+    for (int i = 0; i < CONFIG_EXAMPLE_SPI_ETHERNETS_NUM; i++)
+    {
         eth_handles[eth_cnt] = eth_init_spi(&spi_eth_module_config[i], NULL, NULL);
         ESP_GOTO_ON_FALSE(eth_handles[eth_cnt], ESP_FAIL, err, TAG, "SPI Ethernet init failed");
         eth_cnt++;

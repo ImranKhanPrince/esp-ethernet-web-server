@@ -1,4 +1,4 @@
-idf_component_register(SRCS "ethernet_example_main.cpp" "server.c"
+idf_component_register(SRCS "app_main.cpp" "server.c"
                        INCLUDE_DIRS "."
                        EMBED_FILES "html/index.html"
                                    "html/assets/styles/style.css"

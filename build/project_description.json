@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ethernet_basic",
-    "project_version":    "3ad776c-dirty",
+    "project_version":    "fc5c553-dirty",
     "project_path":       "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3",
     "idf_path":           "C:/Users/Notebook/esp/v5.3/esp-idf",
     "build_dir":          "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build",
@@ -1210,7 +1210,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/main/libmain.a",
-            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/main/ethernet_example_main.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/main/server.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/index.html.S", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/style.css.S", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/app.js.S", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/favicon.ico.S" ],
+            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/main/app_main.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/main/server.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/index.html.S", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/style.css.S", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/app.js.S", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/favicon.ico.S" ],
             "include_dirs": [ "." ]
         },
         "mbedtls": {
