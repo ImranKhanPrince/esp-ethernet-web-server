@@ -28,6 +28,8 @@ using namespace std;
 #endif
 
 extern bool Debug_;
+extern float delayMultiplier_;
+
 // extern bool           SetInventoryMask();
 
 /** \brief

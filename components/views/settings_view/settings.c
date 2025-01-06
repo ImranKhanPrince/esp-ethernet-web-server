@@ -2,8 +2,6 @@
 
 #include "settings.h"
 
-#include "cJSON.h"
-
 // TODO: Cahnge the name of this file into settings_view.c
 
 const char *get_settings()
@@ -73,6 +71,18 @@ char *settings_to_json(const rfm_settings_saveable_t *settings)
 
   return json_string;
 }
+
+/* Example JSON data:
+{
+    "auth_key": "1234",
+    "data": {
+    "rf_band": "U",
+    "rf_power": 26,
+    "rf_scan_period": 300,
+    "device_beep": true
+    }
+}
+*/
 const char *set_settings(const char *data)
 {
   printf("LOG: Data: %s\n", data);
@@ -82,6 +92,19 @@ const char *set_settings(const char *data)
   {
     printf("LOG: Invalid JSON FORMAT\n");
     return NULL;
+  }
+  cJSON *auth_key = cJSON_GetObjectItem(root, "auth_key");
+  if (auth_key == NULL || auth_key->valuestring == NULL)
+  {
+    cJSON_Delete(root);
+    return "{\"error\":\"Invalid JSON FORMAT\"}\n";
+  }
+
+  // verify the auth key
+  if (strcmp(auth_key->valuestring, "1234") != 0)
+  {
+    cJSON_Delete(root);
+    return "{\"error\":\"Invalid Auth Key\"}\n";
   }
 
   char *data_json = cJSON_Print(root);

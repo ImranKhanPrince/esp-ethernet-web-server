@@ -1157,7 +1157,7 @@ namespace mu910
         do
         {
             emptyserial();
-            ok = transfer(command, cmdlen, response, sizeof(response), 20, scantime_);
+            ok = transfer(command, cmdlen, response, sizeof(response), 20, scantime_ * delayMultiplier_);
 
         } while (retries-- && !ok);
         emptyserial();

@@ -22,7 +22,9 @@
 #define CLK_PER_MS (CLK_TCK / 1000)
 #endif // LINUX
 
-bool Debug_ = true;
+bool Debug_ = false;
+float delayMultiplier_ = 1.0;
+
 static string password_ = string(4, 0);
 static Filter filter_; // MaskAdr*, MaskLen and MaskData*
 vector<ScanData> scan_;

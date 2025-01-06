@@ -8,11 +8,6 @@
 
 #include "api_json.h"
 
-// min is having some issue so manual min here
-#ifndef MIN
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-#endif
-
 static const char *TAG = "HTTP_SERVER";
 
 extern const uint8_t _binary_html_index_html_start[] asm("_binary_index_html_start");
@@ -171,10 +166,34 @@ esp_err_t handle_get_func_settings(httpd_req_t *req)
   return ESP_OK;
 }
 
-esp_err_t handle_get_scan(httpd_req_t *req)
+esp_err_t handle_post_scan(httpd_req_t *req)
 {
   httpd_resp_set_type(req, "application/json");
-  httpd_resp_send(req, "{\"status\": \"ok\"}", HTTPD_RESP_USE_STRLEN);
+
+  int content_len = req->content_len;
+  char data[content_len];
+  if (content_len > 500)
+  {
+    ESP_LOGE(TAG, "Content length is too large");
+    httpd_resp_send_404(req);
+    return ESP_FAIL;
+  }
+
+  int ret = httpd_req_recv(req, data, content_len);
+
+  if (ret <= 0)
+  {
+    if (ret == HTTPD_SOCK_ERR_TIMEOUT)
+    {
+      httpd_resp_send_408(req);
+    }
+    return ESP_FAIL;
+  }
+  // PASSING THE CONTROL TO VIEW
+  char *response = handle_scan_command(data); // TODO: CULPRIT HERE
+  printf("DEBUG: got out of the scan command\n");
+
+  httpd_resp_send(req, response, strlen(response));
 
   return ESP_OK;
 }
@@ -186,6 +205,9 @@ esp_err_t handle_get_scan(httpd_req_t *req)
 void start_web_server()
 {
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
+  config.max_uri_handlers = 12;
+  config.max_resp_headers = 12;
+  config.stack_size = 10 * 1024;
   httpd_handle_t server = NULL;
 
   ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
@@ -230,11 +252,11 @@ void start_web_server()
         .handler = handle_get_func_settings};
     httpd_register_uri_handler(server, &api_get_func_settings_uri);
 
-    httpd_uri_t api_get_scan_uri = {
+    httpd_uri_t api_post_scan_uri = {
         .uri = "/api/scan",
-        .method = HTTP_GET,
-        .handler = handle_get_scan};
-    httpd_register_uri_handler(server, &api_get_scan_uri);
+        .method = HTTP_POST,
+        .handler = handle_post_scan};
+    httpd_register_uri_handler(server, &api_post_scan_uri);
 
     httpd_uri_t css_uri = {
         .uri = "/assets/styles/style.css",
