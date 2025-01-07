@@ -190,7 +190,7 @@ esp_err_t handle_post_scan(httpd_req_t *req)
     return ESP_FAIL;
   }
   // PASSING THE CONTROL TO VIEW
-  char *response = handle_scan_command(data); // TODO: CULPRIT HERE
+  char *response = handle_scan_command(data);
   printf("DEBUG: got out of the scan command\n");
 
   httpd_resp_send(req, response, strlen(response));
@@ -201,6 +201,8 @@ esp_err_t handle_post_scan(httpd_req_t *req)
 // TODO: the names will be set operations setting and gt operations setting for the scan and data related settings
 // TODO: TO give forward slash at the end or to not give that is the question.
 // TODO: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
+// TODO: handle api if the reader is not connected
+// TODO: use a mutex to control the uart interface cz while scanning this will cause problem
 
 void start_web_server()
 {

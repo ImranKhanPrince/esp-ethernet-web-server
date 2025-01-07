@@ -48,13 +48,13 @@ typedef enum
   MOTION_SENSOR,
   IR_MOTION_SENSOR
 } TRIGGER;
+// TODO: Timed trigger or timed continuous scan from 8AM to 5pm such and such from json array of struct to store the periods
 
 typedef enum
 {
+  SCAN_ONCE,
   SCAN_CONTINUOUS,
-  SCAN_TRIGGER,
   SCAN_OFF,
-  SCAN_TRIGGER_COMBINED
 } SCAN_MODES;
 
 typedef struct
@@ -93,6 +93,10 @@ typedef enum
   SET_DEVICE_SETTING_INVALID_DATA_OUTPUT_LOC,
   SET_DEVICE_SETTING_INVALID_SCAN_INTERVAL
 } SET_DEVICE_SETTING_STATUS;
+
+// TODO: in future use getter and setter for nvs and variable sync
+extern device_func_status_t functionality_status_;
+extern rfm_settings_all_t settings_;
 
 #ifdef __cplusplus
 extern "C"

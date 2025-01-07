@@ -6,7 +6,7 @@
 // Create a UART Mutex that controls the access of the UHF module UART otherwise parallel processing 2 route will cause issue
 // use nvs to keep all the settigns data. keep nvs applications in another component just call the helpers from here.
 
-static rfm_settings_all_t settings_ = {
+rfm_settings_all_t settings_ = {
     .device_id = 1,
     .device_name = "J4221UI",
     .fw_version = 0.1,
@@ -19,7 +19,7 @@ static rfm_settings_all_t settings_ = {
     .rf_scan_period = 1000, // ms
     .device_beep = true};
 
-static device_func_status_t functionality_status_ = {
+device_func_status_t functionality_status_ = {
     .scan_mode = SCAN_OFF,
     .scan_interval = 0,
     .data_output_loc = "none",

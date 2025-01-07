@@ -7,10 +7,15 @@
 const char *get_settings()
 {
   rfm_settings_all_t *settings = get_device_settings();
+  if (settings == NULL)
+  {
+    return strdup("{\"error\":\"Failed to get device settings\"}\n");
+  }
+
   cJSON *root_object = cJSON_CreateObject();
   if (root_object == NULL)
   {
-    return NULL;
+    return strdup("{\"error\":\"Failed to create JSON object\"}\n");
   }
 
   // Add data to the JSON object
@@ -39,10 +44,14 @@ const char *get_settings()
 
   // Convert JSON object to string
   char *json_string = cJSON_PrintUnformatted(root_object);
-  strcat(json_string, "\n");
   cJSON_Delete(root_object); // Free JSON object
 
-  return json_string;
+  if (json_string == NULL)
+  {
+    return strdup("{\"error\":\"Failed to print JSON\"}\n");
+  }
+
+  return strdup(json_string);
 }
 
 char *settings_to_json(const rfm_settings_saveable_t *settings)
