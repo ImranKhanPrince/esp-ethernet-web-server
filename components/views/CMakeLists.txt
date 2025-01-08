@@ -1,7 +1,7 @@
 set(SOURCES "api_info_view/api_json.c" 
             "settings_view/settings.c"
             "scan_view/scan_view.cpp"
-            "scan_view/helper_func.cpp")
+            )
 
 idf_component_register(SRCS ${SOURCES}
                        INCLUDE_DIRS "." "include" 

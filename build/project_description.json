@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ethernet_basic",
-    "project_version":    "3b0bb52-dirty",
+    "project_version":    "7f95820-dirty",
     "project_path":       "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3",
     "idf_path":           "C:/Users/Notebook/esp/v5.3/esp-idf",
     "build_dir":          "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build",
@@ -1400,13 +1400,13 @@
             "dir": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task",
             "type": "LIBRARY",
             "lib": "__idf_scan_task",
-            "reqs": [ "j4210u-driver_esp5.3", "settings_model", "global_status" ],
+            "reqs": [ "j4210u-driver_esp5.3", "settings_model", "global_status", "json" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/scan_task/libscan_task.a",
-            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task/scan_task.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task/helper_formatter.cpp" ],
-            "include_dirs": [ "." ]
+            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task/scan_task.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task/helper_formatter.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task/helper_func.cpp" ],
+            "include_dirs": [ ".", "include" ]
         },
         "sdmmc": {
             "alias": "idf::sdmmc",
@@ -1570,7 +1570,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/views/libviews.a",
-            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/api_info_view/api_json.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/settings_view/settings.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/scan_view/scan_view.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/scan_view/helper_func.cpp" ],
+            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/api_info_view/api_json.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/settings_view/settings.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/scan_view/scan_view.cpp" ],
             "include_dirs": [ ".", "include" ]
         },
         "wear_levelling": {
@@ -2925,11 +2925,11 @@
             "prefix": "idf",
             "dir": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/scan_task",
             "lib": "__idf_scan_task",
-            "reqs": [ "j4210u-driver_esp5.3", "settings_model", "global_status" ],
+            "reqs": [ "j4210u-driver_esp5.3", "settings_model", "global_status", "json" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
-            "include_dirs": [ "." ]
+            "include_dirs": [ ".", "include" ]
         },
         "settings_model": {
             "alias": "idf::settings_model",

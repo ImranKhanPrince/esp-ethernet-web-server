@@ -73,24 +73,31 @@ void rtos_cont_scan_task(void *pvParams)
   {
     std::vector<ScanResult> scanResults;
     ScanResult sd;
-
-    int n = Inventory(false);
-    printf("LOG: TAGS FOUND: %d\n", n);
-
-    // if (n == 0)
-    // {
-    //   return scanResults; // TODO: handle the error
-    // }
-
-    for (int i = 0; i < n; i++)
+    if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
     {
-      if (GetResult((unsigned char *)&sd, i))
+      int n = Inventory(false);
+      printf("LOG: TAGS FOUND: %d\n", n);
+
+      // if (n == 0)
+      // {
+      //   return scanResults; // TODO: handle the error
+      // }
+
+      for (int i = 0; i < n; i++)
       {
-        scanResults.push_back(sd);
+        if (GetResult((unsigned char *)&sd, i))
+        {
+          scanResults.push_back(sd);
+        }
       }
+
+      xSemaphoreGive(xUhfUartMutex);
     }
 
-    format_scan_result_arr(scanResults);
+    char *scan_json_data = format_scan_result_arr(scanResults);
+    // TODO: sends this data throught messaging via socket. socket connects via ip/link mk function.
+    // status will say if socket is online or not use esp_http client
+    printf("LOG: cont scan data %s\n", scan_json_data);
 
     printf("LOG: rtos_cont_scan_task called\n");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -115,7 +122,6 @@ bool stop_cont_scan()
   {
     vTaskDelete(pxCont_scan_task_handle);
     pxCont_scan_task_handle = NULL;
-    functionality_status_.scan_mode = SCAN_OFF;
     return true;
   }
 

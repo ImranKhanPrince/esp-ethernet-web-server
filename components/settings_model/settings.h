@@ -59,7 +59,6 @@ typedef enum
 
 typedef struct
 {
-  SCAN_MODES scan_mode;     // cont scan or trigger scan
   int scan_interval;        // if cont scan then interval
   char data_output_loc[50]; // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
   TRIGGER trigger;

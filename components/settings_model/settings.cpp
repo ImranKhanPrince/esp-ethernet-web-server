@@ -20,7 +20,6 @@ rfm_settings_all_t settings_ = {
     .device_beep = true};
 
 device_func_status_t functionality_status_ = {
-    .scan_mode = SCAN_OFF,
     .scan_interval = 0,
     .data_output_loc = "none",
     .trigger = NO_TRIGGER};
@@ -92,7 +91,7 @@ SET_SETTINGS_STATUS set_device_settings(const rfm_settings_saveable_t *settings)
 
 SET_DEVICE_SETTING_STATUS set_device_func_settings(const device_func_status_t *settings)
 {
-  functionality_status_.scan_mode = settings->scan_mode;
+
   functionality_status_.scan_interval = settings->scan_interval;
   strncpy(functionality_status_.data_output_loc, settings->data_output_loc, sizeof(functionality_status_.data_output_loc) - 1);
   functionality_status_.trigger = settings->trigger;

@@ -203,7 +203,6 @@ const char *get_json_device_func_settings()
 
   device_func_status_t *device_func_settings = get_device_func_settings();
 
-  cJSON_AddNumberToObject(root_object, "scan_mode", device_func_settings->scan_mode);
   cJSON_AddNumberToObject(root_object, "scan_interval", device_func_settings->scan_interval);
   cJSON_AddStringToObject(root_object, "data_output_loc", device_func_settings->data_output_loc);
   cJSON_AddNumberToObject(root_object, "trigger", device_func_settings->trigger);
@@ -223,16 +222,6 @@ const char *set_func_settings(const char *data)
     return NULL;
   }
   device_func_status_t device_function_stat;
-
-  cJSON *scan_mode = cJSON_GetObjectItem(root_object, "scan_mode");
-  if (cJSON_IsNumber(scan_mode))
-  {
-    device_function_stat.scan_mode = scan_mode->valueint;
-  }
-  else
-  {
-    return "{\"error\":\"Invalid scan_mode format\"}\n";
-  }
 
   cJSON *scan_interval = cJSON_GetObjectItem(root_object, "scan_interval");
   if (cJSON_IsNumber(scan_interval))
