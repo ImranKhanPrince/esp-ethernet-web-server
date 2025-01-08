@@ -149,7 +149,7 @@ namespace mu903
         } while (retries--);
         if (fail)
         {
-            printf("[ERROR] Send command failed.");
+            printf("[ERROR] Send command failed.\n");
             return false;
         }
 

@@ -838,6 +838,13 @@ C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/j4210u-driver_esp5.3/C
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/j4210u-driver_esp5.3/CMakeFiles/install.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/j4210u-driver_esp5.3/CMakeFiles/install/local.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/j4210u-driver_esp5.3/CMakeFiles/install/strip.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/__idf_global_status.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/edit_cache.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/rebuild_cache.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/list_install_components.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/install.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/install/local.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/CMakeFiles/install/strip.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFiles/__idf_settings_model.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFiles/edit_cache.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFiles/rebuild_cache.dir

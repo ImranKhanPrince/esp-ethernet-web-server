@@ -7,6 +7,7 @@
 #include "math.h"
 
 #include "api_json.h"
+#include "global_status.h"
 
 static const char *TAG = "HTTP_SERVER";
 
@@ -67,6 +68,16 @@ esp_err_t handle_api_root(httpd_req_t *req)
 
 esp_err_t handle_get_settings(httpd_req_t *req)
 {
+
+  if (get_uhf_status() == UHF_DISCONNECTED)
+  {
+    httpd_resp_set_type(req, "application/json");
+    char *response = strdup("{\"error\":\"Couldn't communicate with RF. Please restart the power.\"}\n");
+    httpd_resp_send(req, response, HTTPD_RESP_USE_STRLEN);
+    return ESP_OK;
+  }
+
+  // TODO: change const char cz thus you can't add \n to it cuases crash
   const char *json_response = get_settings();
   httpd_resp_set_type(req, "application/json");
   httpd_resp_send(req, json_response, strlen(json_response));

@@ -22,7 +22,7 @@
 #define CLK_PER_MS (CLK_TCK / 1000)
 #endif // LINUX
 
-bool Debug_ = false;
+bool Debug_ = true;
 float delayMultiplier_ = 1.0;
 
 static string password_ = string(4, 0);

@@ -576,6 +576,7 @@ int platform_write(uart_port_t h,
                    unsigned short buffer_size,
                    unsigned short *number_bytes_transmitted)
 {
+    // TODO: use error checking function adn return based on that
 
     int bytes_written = uart_write_bytes(UART_NUM_1, message_buffer, buffer_size);
     if (bytes_written > 0)

@@ -21,8 +21,10 @@
 #include <esp_http_server.h>
 #include "server.h"
 #include "driver.h"
+#include "global_status.h"
 
 static const char *TAG = "eth_example";
+
 esp_err_t hello_get_handler(httpd_req_t *req)
 {
     const char *resp_str = "Hello, World!";
@@ -111,17 +113,6 @@ static void got_ip_event_handler(void *arg, esp_event_base_t event_base,
 
 extern "C" void app_main(void)
 {
-    if (!OpenComPort("com3", 115200))
-    {
-        printf("Failed to open COM port.\n");
-    }
-    else
-    {
-        printf("COM port opened successfully.\n");
-    }
-    // int n = Inventory(false);
-    // printf("n=%d\n", n);
-
     // Initialize Ethernet driver
     uint8_t eth_port_cnt = 0;
     esp_eth_handle_t *eth_handles;
@@ -177,4 +168,25 @@ extern "C" void app_main(void)
     {
         ESP_ERROR_CHECK(esp_eth_start(eth_handles[i]));
     }
+
+    xUhfUartMutex = xSemaphoreCreateMutex();
+
+    // start uhf module at last bcz it takes 1s to start once powered
+    if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
+    {
+        if (!OpenComPort("com3", 115200))
+        {
+            printf("Failed to open COM port.\n");
+        }
+        else
+        {
+            printf("COM port opened successfully.\n");
+            set_uhf_status(UHF_CONNECTED);
+        }
+        xSemaphoreGive(xUhfUartMutex);
+    }
+
+    xTaskCreate(rtos_check_uhf_module_task, "check uhf module task", 2 * 1024, NULL, 1, NULL);
+    // int n = Inventory(false);
+    // printf("n=%d\n", n);
 }

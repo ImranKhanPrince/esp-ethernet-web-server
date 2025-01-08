@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "global_status.h"
+
 TaskHandle_t pxCont_scan_task_handle = NULL;
 
 std::vector<ScanResult> single_scan()
@@ -9,21 +11,25 @@ std::vector<ScanResult> single_scan()
   printf("LOG: single_scan called\n");
   std::vector<ScanResult> scanResults;
   ScanResult sd;
-
-  int n = Inventory(false);
-  printf("LOG: TAGS FOUND: %d\n", n);
-
-  if (n == 0)
+  if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
   {
-    return scanResults; // TODO: handle the error
-  }
+    int n = Inventory(false);
+    printf("LOG: TAGS FOUND: %d\n", n);
 
-  for (int i = 0; i < n; i++)
-  {
-    if (GetResult((unsigned char *)&sd, i))
+    if (n == 0)
     {
-      scanResults.push_back(sd);
+      return scanResults; // TODO: handle the error
     }
+
+    for (int i = 0; i < n; i++)
+    {
+      if (GetResult((unsigned char *)&sd, i))
+      {
+        scanResults.push_back(sd);
+      }
+    }
+    xSemaphoreGive(xUhfUartMutex);
+    return scanResults;
   }
 
   return scanResults;
