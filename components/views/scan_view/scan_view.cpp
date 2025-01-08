@@ -97,18 +97,6 @@ char *handle_scan_command(const char *data)
   return response;
 }
 
-static std::string tohex(const std::string &uid)
-{
-  std::string z = "";
-  char p[3] = "00";
-  for (int i = 0; i < (int)uid.size(); i++)
-  {
-    snprintf(p, sizeof(p), "%02X", uid[i] & 0xFF);
-    z += p;
-  }
-  return z;
-}
-
 char *handle_single_scan()
 {
   std::vector<ScanResult> scanResults = single_scan();
