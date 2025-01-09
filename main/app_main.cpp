@@ -22,6 +22,7 @@
 #include "server.h"
 #include "driver.h"
 #include "global_status.h"
+#include "http_message.h"
 
 static const char *TAG = "eth_example";
 

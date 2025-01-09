@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "global_status.h"
+#include "http_message.h"
 
 TaskHandle_t pxCont_scan_task_handle = NULL;
 
@@ -98,7 +99,7 @@ void rtos_cont_scan_task(void *pvParams)
     // TODO: sends this data throught messaging via socket. socket connects via ip/link mk function.
     // status will say if socket is online or not use esp_http client
     printf("LOG: cont scan data %s\n", scan_json_data);
-
+    send_json_http_message(scan_json_data);
     printf("LOG: rtos_cont_scan_task called\n");
     vTaskDelay(1000 / portTICK_PERIOD_MS);
   }

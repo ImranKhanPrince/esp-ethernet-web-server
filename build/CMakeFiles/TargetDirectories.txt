@@ -852,6 +852,13 @@ C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFi
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFiles/install.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFiles/install/local.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/CMakeFiles/install/strip.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/__idf_messaging.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/edit_cache.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/rebuild_cache.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/list_install_components.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/install.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/install/local.dir
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/CMakeFiles/install/strip.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/scan_task/CMakeFiles/__idf_scan_task.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/scan_task/CMakeFiles/edit_cache.dir
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/scan_task/CMakeFiles/rebuild_cache.dir

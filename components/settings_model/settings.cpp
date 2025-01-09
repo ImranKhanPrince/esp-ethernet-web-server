@@ -21,7 +21,7 @@ rfm_settings_all_t settings_ = {
 
 device_func_status_t functionality_status_ = {
     .scan_interval = 0,
-    .data_output_loc = "none",
+    .data_output_loc = "http://192.168.1.12:3001/",
     .trigger = NO_TRIGGER};
 
 rfm_settings_all_t *get_device_settings()
