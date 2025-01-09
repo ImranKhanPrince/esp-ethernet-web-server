@@ -9,8 +9,7 @@
 
 static SemaphoreHandle_t data_passed_bin_sem;
 
-esp_err_t
-http_event_handler(esp_http_client_event_t *evt)
+esp_err_t http_event_handler(esp_http_client_event_t *evt)
 {
   switch (evt->event_id)
   {
@@ -56,6 +55,7 @@ void http_client_task(void *pvParameters)
   xSemaphoreGive(data_passed_bin_sem);
 
   // vTaskDelay(3000 / portTICK_PERIOD_MS); // wait for some moment so that got ip from router
+  // .url = WEB_SERVER_URL
   esp_http_client_config_t config = {
       .url = functionality_status_.data_output_loc,
       .timeout_ms = 3000,
