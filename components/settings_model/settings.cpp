@@ -1,6 +1,7 @@
 #include "settings.h"
 
 #include "driver.h"
+#include "global_status.h"
 
 // THIS FILE WILL NOT RETURN ANY JSON INSTED IT WILL RETURN STRUCTS AND ARRAYS
 // Create a UART Mutex that controls the access of the UHF module UART otherwise parallel processing 2 route will cause issue
@@ -21,7 +22,7 @@ rfm_settings_all_t settings_ = {
 
 device_func_status_t functionality_status_ = {
     .scan_interval = 0,
-    .data_output_loc = "http://192.168.1.12:3001/",
+    .data_output_loc = strdup("http://192.168.1.12:3001/"),
     .trigger = NO_TRIGGER};
 
 rfm_settings_all_t *get_device_settings()
@@ -30,9 +31,15 @@ rfm_settings_all_t *get_device_settings()
   // However if wanted we can use Tasks then it will be concurrent.
 
   // TODO: Create a device tree struct where you can find the status of each devices
+  // Not needed as the devices are very small count 1.bms, 2. uhf, 3. display, 4. ehternet
 
   ReaderInfo ri;
-  GetSettings(&ri);
+
+  if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
+  {
+    GetSettings(&ri);
+    xSemaphoreGive(xUhfUartMutex);
+  }
 
   settings_.min_freq = ri.MinFreq;
   settings_.max_freq = ri.MaxFreq;
@@ -78,15 +85,20 @@ SET_SETTINGS_STATUS set_device_settings(const rfm_settings_saveable_t *settings)
   ri.BeepOn = settings->device_beep;
   ri.BaudRate = 115200;
 
-  // TODO: USE Mutex to lock the UART
-  if (SetSettings(&ri))
+  if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
   {
-    return SET_SETTINGS_SUCCESS;
+    if (SetSettings(&ri))
+    {
+      xSemaphoreGive(xUhfUartMutex);
+      return SET_SETTINGS_SUCCESS;
+    }
+    else
+    {
+      xSemaphoreGive(xUhfUartMutex);
+      return SET_SETTINGS_FAIL;
+    }
   }
-  else
-  {
-    return SET_SETTINGS_FAIL;
-  }
+  return SET_SETTINGS_FAIL;
 }
 
 SET_DEVICE_SETTING_STATUS set_device_func_settings(const device_func_status_t *settings)

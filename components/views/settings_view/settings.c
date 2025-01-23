@@ -4,7 +4,7 @@
 
 // TODO: Cahnge the name of this file into settings_view.c
 
-const char *get_settings()
+char *get_settings()
 {
   rfm_settings_all_t *settings = get_device_settings();
   if (settings == NULL)
@@ -92,7 +92,7 @@ char *settings_to_json(const rfm_settings_saveable_t *settings)
     }
 }
 */
-const char *set_settings(const char *data)
+char *set_settings(const char *data)
 {
   printf("LOG: Data: %s\n", data);
   cJSON *root = cJSON_Parse(data);
@@ -197,7 +197,7 @@ const char *set_settings(const char *data)
   return "{\"success\":\"Settings set successfully.\"}\n";
 }
 
-const char *get_json_device_func_settings()
+char *get_json_device_func_settings()
 {
   cJSON *root_object = cJSON_CreateObject();
 
@@ -214,7 +214,7 @@ const char *get_json_device_func_settings()
   return json_string;
 }
 
-const char *set_func_settings(const char *data)
+char *set_func_settings(const char *data)
 {
   cJSON *root_object = cJSON_Parse(data);
   if (root_object == NULL)

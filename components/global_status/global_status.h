@@ -51,6 +51,8 @@ extern "C"
 
   // TASK
   void rtos_check_uhf_module_task(void *pvParams);
+  // TODO: create a uart interrup that on uart event will try to reconnect cz when the module is powered up it sends some data through tx.
+  // not necessary for now as the esp powers up along with the module
 
 #ifdef __cplusplus
 }

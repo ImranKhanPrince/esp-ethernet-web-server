@@ -52,7 +52,7 @@ void http_client_task(void *pvParameters)
 {
   char *message = (char *)pvParameters;
 
-  xSemaphoreGive(data_passed_bin_sem);
+  xSemaphoreGive(data_passed_bin_sem); // data copy done releasing binary semaphore
 
   // vTaskDelay(3000 / portTICK_PERIOD_MS); // wait for some moment so that got ip from router
   // .url = WEB_SERVER_URL

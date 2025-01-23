@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ethernet_basic",
-    "project_version":    "f45768c-dirty",
+    "project_version":    "688cb10-dirty",
     "project_path":       "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3",
     "idf_path":           "C:/Users/Notebook/esp/v5.3/esp-idf",
     "build_dir":          "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build",
@@ -1445,12 +1445,12 @@
             "dir": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings_model",
             "type": "LIBRARY",
             "lib": "__idf_settings_model",
-            "reqs": [ "esp_http_server", "j4210u-driver_esp5.3" ],
+            "reqs": [ "esp_http_server", "j4210u-driver_esp5.3", "global_status", "nvs_flash" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/libsettings_model.a",
-            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings_model/settings.cpp" ],
+            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings_model/settings.cpp", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings_model/settings_nvs.cpp" ],
             "include_dirs": [ "." ]
         },
         "soc": {
@@ -2964,7 +2964,7 @@
             "prefix": "idf",
             "dir": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings_model",
             "lib": "__idf_settings_model",
-            "reqs": [ "esp_http_server", "j4210u-driver_esp5.3" ],
+            "reqs": [ "esp_http_server", "j4210u-driver_esp5.3", "global_status", "nvs_flash" ],
             "priv_reqs": [],
             "managed_reqs": [],
             "managed_priv_reqs": [],

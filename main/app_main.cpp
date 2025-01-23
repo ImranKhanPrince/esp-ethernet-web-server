@@ -23,6 +23,7 @@
 #include "driver.h"
 #include "global_status.h"
 #include "http_message.h"
+#include "settings.h"
 
 static const char *TAG = "eth_example";
 
@@ -190,4 +191,13 @@ extern "C" void app_main(void)
     xTaskCreate(rtos_check_uhf_module_task, "check uhf module task", 2 * 1024, NULL, 1, NULL);
     // int n = Inventory(false);
     // printf("n=%d\n", n);
+
+    printf("data output location: %s\n", functionality_status_.data_output_loc);
+
+    nvs_init();
+    set_nvs_func_settings(&functionality_status_);
+    printf("data output location: %s\n", functionality_status_.data_output_loc);
+
+    get_nvs_func_settings(&functionality_status_);
+    printf("data output location: %s\n", functionality_status_.data_output_loc);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include "nvs_flash.h"
 
 /*
 device_id - int
@@ -59,8 +60,8 @@ typedef enum
 
 typedef struct
 {
-  int scan_interval;        // if cont scan then interval
-  char data_output_loc[50]; // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
+  int scan_interval;     // if cont scan then interval
+  char *data_output_loc; // need to use strdup and free // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
   TRIGGER trigger;
 } device_func_status_t; // rf module settings
 
@@ -96,6 +97,11 @@ typedef enum
 // TODO: in future use getter and setter for nvs and variable sync
 extern device_func_status_t functionality_status_;
 extern rfm_settings_all_t settings_;
+extern nvs_handle_t func_settings_handle;
+
+bool nvs_init();
+bool get_nvs_func_settings(device_func_status_t *func_settings);
+bool set_nvs_func_settings(device_func_status_t *func_settings);
 
 #ifdef __cplusplus
 extern "C"
@@ -107,6 +113,7 @@ extern "C"
   device_func_status_t *get_device_func_settings();
   SET_DEVICE_SETTING_STATUS
   set_device_func_settings(const device_func_status_t *settings);
+
 #ifdef __cplusplus
 }
 #endif //__cplusplus
