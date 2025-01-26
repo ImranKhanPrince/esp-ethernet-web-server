@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ethernet_basic",
-    "project_version":    "70a68b5-dirty",
+    "project_version":    "2ffd39d-dirty",
     "project_path":       "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3",
     "idf_path":           "C:/Users/Notebook/esp/v5.3/esp-idf",
     "build_dir":          "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build",
@@ -1585,7 +1585,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/views/libviews.a",
-            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/api_info_view/api_json.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/settings_view/settings.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/scan_view/scan_view.cpp" ],
+            "sources": [ "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/api_info_view/api_json.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/settings_view/settings_view.c", "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/views/scan_view/scan_view.cpp" ],
             "include_dirs": [ ".", "include" ]
         },
         "wear_levelling": {

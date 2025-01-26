@@ -38,15 +38,13 @@ char *handle_scan_command(const char *data)
     return strdup("{\"error\":\"Invalid JSON FORMAT\"}\n");
   }
   // --------Auth
-  cJSON *auth_key = cJSON_GetObjectItem(root_object, "auth_key");
+  cJSON *auth_key = cJSON_GetObjectItem(root_object, "auth_key"); // a simple string/obj
 
   if (auth_key == NULL || strcmp(auth_key->valuestring, "1234") != 0)
   {
     cJSON_Delete(root_object);
-    cJSON_Delete(auth_key);
     return strdup("{\"error\":\"Invalid Auth Key\"}\n");
   }
-  // cJSON_Delete(auth_key); // TODO: causes crahs know why
   // ---- Auth finish
 
   cJSON *data_object = cJSON_GetObjectItem(root_object, "data");

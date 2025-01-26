@@ -84,5 +84,6 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "global_status.h": "c"
-    }
+    },
+    "todo-tree.tree.showCountsInTree": true
 }

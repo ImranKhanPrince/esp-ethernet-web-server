@@ -1,5 +1,5 @@
 set(SOURCES "api_info_view/api_json.c" 
-            "settings_view/settings.c"
+            "settings_view/settings_view.c"
             "scan_view/scan_view.cpp"
             )
 
