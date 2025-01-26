@@ -219,7 +219,7 @@ char *set_func_settings(const char *data)
   {
     return NULL;
   }
-  device_func_status_t device_function_stat;
+  device_func_status_t device_function_stat = {0}; // Zero-initialize all fields
 
   cJSON *scan_interval = cJSON_GetObjectItem(root_object, "scan_interval");
   if (cJSON_IsNumber(scan_interval))
@@ -228,6 +228,7 @@ char *set_func_settings(const char *data)
   }
   else
   {
+    cJSON_Delete(root_object);
     return "{\"error\":\"Invalid scan_interval format\"}\n";
   }
 
@@ -236,13 +237,13 @@ char *set_func_settings(const char *data)
   {
     if (device_function_stat.data_output_loc != NULL)
     {
-      free(device_function_stat.data_output_loc);
-      device_function_stat.data_output_loc = NULL;
+      free(device_function_stat.data_output_loc); // no need to free as next line sets it
     }
     device_function_stat.data_output_loc = strdup(data_output_loc->valuestring);
   }
   else
   {
+    cJSON_Delete(root_object);
     return "{\"error\":\"Invalid data_output_loc format\"}\n";
   }
 
@@ -253,6 +254,7 @@ char *set_func_settings(const char *data)
   }
   else
   {
+    cJSON_Delete(root_object);
     return "{\"error\":\"Invalid trigger format\"}\n";
   }
   cJSON_Delete(root_object);

@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "ethernet_basic",
-    "project_version":    "2ffd39d-dirty",
+    "project_version":    "60f975f-dirty",
     "project_path":       "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3",
     "idf_path":           "C:/Users/Notebook/esp/v5.3/esp-idf",
     "build_dir":          "C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build",

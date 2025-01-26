@@ -69,7 +69,6 @@ void http_client_task(void *pvParameters)
   esp_http_client_set_method(client, HTTP_METHOD_POST);
 
   // Set POST data
-  const char *post_data = "Hello";
   esp_http_client_set_post_field(client, message, strlen(message));
 
   // Perform HTTP request
@@ -95,6 +94,17 @@ void http_client_task(void *pvParameters)
 
 bool send_json_http_message(char *message)
 {
+  if (strcmp(functionality_status_.data_output_loc, "none") == 0)
+  {
+    printf("No link available..\n");
+    return false;
+  }
+  else if (false)
+  {
+    // TODO: IMPORTANT: URL formatting error condition
+    return false;
+  }
+
   data_passed_bin_sem = xSemaphoreCreateBinary();
 
   xTaskCreate(&http_client_task, "http_client_task", 4 * 1024, (void *)message, 5, NULL);

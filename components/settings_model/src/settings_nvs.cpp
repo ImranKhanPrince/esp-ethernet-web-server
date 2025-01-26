@@ -13,7 +13,10 @@ bool nvs_init()
     ESP_ERROR_CHECK(nvs_flash_erase());
     err = nvs_flash_init();
   }
-  ESP_ERROR_CHECK(err); // TODO: handle error
+  if (err != ESP_OK)
+  {
+    return false;
+  }
   return true;
 }
 
@@ -91,11 +94,11 @@ bool set_nvs_func_settings(device_func_status_t *func_settings)
   if (err != ESP_OK)
   {
     printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-    // TODO: return
+    return false;
   }
   else
   {
-    printf("Opened Nvs for write\n");
+    printf("Opened NVS for write\n");
   }
   // SET func_settings->data_output_loc
   err = nvs_set_str(func_settings_handle, "msg-link", func_settings->data_output_loc);

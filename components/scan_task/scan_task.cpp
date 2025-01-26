@@ -6,6 +6,7 @@
 #include "http_message.h"
 
 TaskHandle_t pxCont_scan_task_handle = NULL;
+SemaphoreHandle_t mutex_continuous_scan_busy = NULL;
 
 std::vector<ScanResult> single_scan()
 {
@@ -19,7 +20,7 @@ std::vector<ScanResult> single_scan()
 
     if (n == 0)
     {
-      return scanResults; // TODO: handle the error
+      return scanResults;
     }
 
     for (int i = 0; i < n; i++)
@@ -53,16 +54,22 @@ bool start_cont_scan()
     {
       return true;
     }
+    else
+    {
+      printf("Failed to create rtos_cont_scan_task.\n");
+    }
   }
   else if (functionality_status_.trigger == IR_SENSOR)
   {
-    // TODO: create a ISR here
+    // TODO: IMPORTANT: create a ISR here
   }
   else if (functionality_status_.trigger == MOTION_SENSOR)
   {
+    // TODO: IMPORTANT: create a ISR here
   }
   else if (functionality_status_.trigger == IR_MOTION_SENSOR)
   {
+    // TODO: IMPORTANT: create a ISR here
   }
 
   return false;
@@ -70,38 +77,46 @@ bool start_cont_scan()
 
 void rtos_cont_scan_task(void *pvParams)
 {
+  mutex_continuous_scan_busy = xSemaphoreCreateMutex();
+
   while (true)
   {
-    std::vector<ScanResult> scanResults;
-    ScanResult sd;
-    if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(mutex_continuous_scan_busy, portMAX_DELAY))
     {
-      int n = Inventory(false);
-      printf("LOG: TAGS FOUND: %d\n", n);
-
-      // if (n == 0)
-      // {
-      //   return scanResults; // TODO: handle the error
-      // }
-
-      for (int i = 0; i < n; i++)
+      std::vector<ScanResult> scanResults;
+      ScanResult sd;
+      if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
       {
-        if (GetResult((unsigned char *)&sd, i))
+        int n = Inventory(false);
+        printf("LOG: TAGS FOUND: %d\n", n);
+
+        for (int i = 0; i < n; i++)
         {
-          scanResults.push_back(sd);
+          if (GetResult((unsigned char *)&sd, i))
+          {
+            scanResults.push_back(sd);
+          }
         }
+
+        xSemaphoreGive(xUhfUartMutex);
+      }
+      if (scanResults.size() != 0)
+      {
+        char *scan_json_data = format_scan_result_arr(scanResults);
+        // TODO: MAYBE - add a direct socket msg along with HTTP
+        // status will say if socket is online or not use esp_http client
+        printf("LOG: cont scan data %s\n", scan_json_data);
+        send_json_http_message(scan_json_data);
+        printf("LOG: tags found \n");
+      }
+      else
+      {
+        printf("LOG: No tags found \n");
       }
 
-      xSemaphoreGive(xUhfUartMutex);
+      xSemaphoreGive(mutex_continuous_scan_busy);
     }
-
-    char *scan_json_data = format_scan_result_arr(scanResults);
-    // TODO: sends this data throught messaging via socket. socket connects via ip/link mk function.
-    // status will say if socket is online or not use esp_http client
-    printf("LOG: cont scan data %s\n", scan_json_data);
-    send_json_http_message(scan_json_data);
-    printf("LOG: rtos_cont_scan_task called\n");
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(functionality_status_.scan_interval / portTICK_PERIOD_MS);
   }
   vTaskDelete(NULL);
 }
@@ -118,11 +133,15 @@ void rtos_single_scan_task(void *pvParams)
 
 bool stop_cont_scan()
 {
-  // TODO: use any kind of mutex to stop the task gracefully so that the task doesn't get deleted while doing an IP/scan operation
   if (pxCont_scan_task_handle != NULL)
   {
+    xSemaphoreTake(mutex_continuous_scan_busy, portMAX_DELAY);
+    vSemaphoreDelete(mutex_continuous_scan_busy);
+    mutex_continuous_scan_busy = NULL;
+
     vTaskDelete(pxCont_scan_task_handle);
     pxCont_scan_task_handle = NULL;
+
     return true;
   }
 

@@ -2,7 +2,7 @@
 #include "helper_func.h"
 #include "cJSON.h"
 
-// TODO: make a seperate string/json helper component that has all the helper
+// TODO: LATER: make a seperate string/json helper COMPONENT that has all the helper
 
 char *format_scan_result_arr(std::vector<ScanResult> scanResults)
 {

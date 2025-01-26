@@ -55,12 +55,11 @@ esp_err_t handle_favicon(httpd_req_t *req)
   return ESP_OK;
 }
 
-// TODO: all the settings realted things verify the key and encryption first if matches then do any operation. else sen 404
+// TODO: IMPORTANT: all the settings realted things verify the key and encryption first if matches then do any operation. else sen 404
 esp_err_t handle_api_root(httpd_req_t *req)
 {
   char *json_response[20];
   status_view(json_response, sizeof(json_response));
-  // TODO: build a \0 null terminator based way to determine the size.
   httpd_resp_set_type(req, "application/json");
   httpd_resp_send(req, json_response, strlen(json_response));
   return ESP_OK;
@@ -77,8 +76,7 @@ esp_err_t handle_get_settings(httpd_req_t *req)
     return ESP_OK;
   }
 
-  // TODO: change const char cz thus you can't add \n to it cuases crash
-  const char *json_response = get_settings();
+  char *json_response = get_settings();
   httpd_resp_set_type(req, "application/json");
   httpd_resp_send(req, json_response, strlen(json_response));
   return ESP_OK;
@@ -92,7 +90,7 @@ esp_err_t handle_post_settings(httpd_req_t *req)
    * In case of string data, null termination will be absent, and
    * content length would give length of string */
 
-  // TODO: find way better way to allocate the buffer
+  // TODO: LATER: find way better way to allocate the buffer
 
   char content[req->content_len];
 
@@ -125,14 +123,13 @@ esp_err_t handle_post_settings(httpd_req_t *req)
   char *resp = set_settings(content);
   if (resp == NULL)
   {
-    // TODO: fix the error handling to send 400 and error message json
+    // TODO: MAYBE: sends a 400 when the json is error msg
     //  Send the complete response in one go
     httpd_resp_send(req, "{\"error\":\"Invalid JSON\"}\n", HTTPD_RESP_USE_STRLEN);
 
     // Return ESP_OK to indicate the response was handled
     return ESP_OK;
   }
-  // TODO: this content will come from model -> view
   httpd_resp_send(req, resp, HTTPD_RESP_USE_STRLEN);
   return ESP_OK;
 }
@@ -209,11 +206,11 @@ esp_err_t handle_post_scan(httpd_req_t *req)
   return ESP_OK;
 }
 
-// TODO: the names will be set operations setting and gt operations setting for the scan and data related settings
-// TODO: TO give forward slash at the end or to not give that is the question.
-// TODO: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
-// TODO: handle api if the reader is not connected
-// TODO: use a mutex to control the uart interface cz while scanning this will cause problem
+// TODO: LATER: TO give forward slash at the end or to not give that is the question.
+// TODO: LATER: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
+// TODO: IMPORTANT: handle api if the reader is not connected
+// TODO: IMPORTANT: authenticate like a default pass like router. user can use that pass to set settings nad encryption key however if they want to change the password then need encryption[] must.
+// TODO: IMPORTANT: Encryption will be applied to total buffer and it will be decrypted in the view-component.
 
 void start_web_server()
 {

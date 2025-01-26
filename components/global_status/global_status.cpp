@@ -28,7 +28,7 @@ void rtos_check_uhf_module_task(void *pvParams)
       printf("LOG: checking uhf module taks\n");
       // this is the shortest possible command for each  module that's why this is used
       // char error[50] = "";
-      // TODO: find out why physical disconnection cases this issue where GetGPI returns 0xFF isnted of -1
+      // TODO: LATER: find out why physical disconnection cases this issue where GetGPI returns 0xFF isnted of -1
       char status = GetGPI(0x01);
       if (status == 0x00 || status == 0x01)
       {
@@ -44,8 +44,14 @@ void rtos_check_uhf_module_task(void *pvParams)
       }
       xSemaphoreGive(xUhfUartMutex);
     }
-    // TODO: conditional delay if reader not connected then delay less and possibly try to reconnect
-    vTaskDelay(.5 * 60 * 1000 / portTICK_PERIOD_MS);
+    if (get_uhf_status() == UHF_DISCONNECTED)
+    {
+      vTaskDelay(1 * 1000 / portTICK_PERIOD_MS);
+    }
+    else
+    {
+      vTaskDelay(.5 * 60 * 1000 / portTICK_PERIOD_MS);
+    }
   }
   vTaskDelete(NULL);
 }

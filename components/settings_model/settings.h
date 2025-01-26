@@ -3,45 +3,6 @@
 #include <stdbool.h>
 #include "nvs_flash.h"
 
-/*
-device_id - int
-device name - string
-fw_version - int
-hw_version - int
-min_freq - int
-max_freq - int
-rf_protocol - string
-rf_band - char
-rf_power - int
-rf_scan_period - int
-device_beep - bool
-
-*/
-
-// TODO: Make this hw status and other one will be function status
-/*
-//
-scan_mode - string (cont, trigger, etc)
-data_output - array[sd, link{ip, port, encryption_key}]
-
-*/
-typedef struct
-{
-  int device_id;        // Device ID
-  char device_name[50]; // Device name (string)
-  float fw_version;     // Firmware version
-  float hw_version;     // Hardware version
-  int min_freq;         // Minimum frequency
-  int max_freq;         // Maximum frequency
-  char rf_protocol[20]; // RF protocol (string)
-  char rf_band;         // RF band (char)
-  int rf_power;         // RF power
-  int rf_scan_period;   // RF scan period
-  bool device_beep;     // Device beep (boolean)
-} rfm_settings_all_t;   // rf module settings
-
-// TODO: Similar struct for function_status(ip, encryption_key, etc)
-
 typedef enum
 {
   NO_TRIGGER,
@@ -49,7 +10,7 @@ typedef enum
   MOTION_SENSOR,
   IR_MOTION_SENSOR
 } TRIGGER;
-// TODO: Timed trigger or timed continuous scan from 8AM to 5pm such and such from json array of struct to store the periods
+// TODO: LATER: Timed trigger or timed continuous scan from 8AM to 5pm such and such from json array of struct to store the periods
 
 typedef enum
 {
@@ -57,21 +18,6 @@ typedef enum
   SCAN_CONTINUOUS,
   SCAN_OFF,
 } SCAN_MODES;
-
-typedef struct
-{
-  int scan_interval;     // if cont scan then interval
-  char *data_output_loc; // need to use strdup and free // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
-  TRIGGER trigger;
-} device_func_status_t; // rf module settings
-
-typedef struct
-{
-  char rf_band;            // RF band (char)
-  int rf_power;            // RF power
-  int rf_scan_period;      // RF scan period
-  bool device_beep;        // Device beep (boolean)
-} rfm_settings_saveable_t; // rf module settings
 
 typedef enum
 {
@@ -94,7 +40,39 @@ typedef enum
   SET_DEVICE_SETTING_INVALID_SCAN_INTERVAL
 } SET_DEVICE_SETTING_STATUS;
 
-// TODO: in future use getter and setter for nvs and variable sync
+typedef struct
+{
+  int device_id;        // Device ID
+  char device_name[50]; // Device name (string)
+  float fw_version;     // Firmware version
+  float hw_version;     // Hardware version
+  int min_freq;         // Minimum frequency
+  int max_freq;         // Maximum frequency
+  char rf_protocol[20]; // RF protocol (string)
+  char rf_band;         // RF band (char)
+  int rf_power;         // RF power
+  int rf_scan_period;   // RF scan period
+  bool device_beep;     // Device beep (boolean)
+} rfm_settings_all_t;   // rf module settings
+
+typedef struct
+{
+  int scan_interval;     // if cont scan then interval
+  char *data_output_loc; // need to use strdup and free // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
+  TRIGGER trigger;
+} device_func_status_t; // rf module settings
+// TODO: IMPORTANT: store encryption key here too and use password to set this settings.
+// data_output - array[sd, link{ip, port, encryption_key}]
+
+typedef struct
+{
+  char rf_band;            // RF band (char)
+  int rf_power;            // RF power
+  int rf_scan_period;      // RF scan period
+  bool device_beep;        // Device beep (boolean)
+} rfm_settings_saveable_t; // rf module settings
+
+// TODO: LATER: use getter and setter for nvs and variable sync
 extern device_func_status_t functionality_status_;
 extern rfm_settings_all_t settings_;
 extern nvs_handle_t func_settings_handle;

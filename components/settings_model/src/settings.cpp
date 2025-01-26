@@ -30,7 +30,7 @@ rfm_settings_all_t *get_device_settings()
   // These functions Gets called one at a time which is handled by the http_server component. so no worry of concurrency.
   // However if wanted we can use Tasks then it will be concurrent.
 
-  // TODO: Create a device tree struct where you can find the status of each devices
+  // TODO: MAYBE: Create a device tree struct where you can find the status of each devices
   // Not needed as the devices are very small count 1.bms, 2. uhf, 3. display, 4. ehternet
 
   ReaderInfo ri;
@@ -54,7 +54,7 @@ rfm_settings_all_t *get_device_settings()
 
 device_func_status_t *get_device_func_settings()
 {
-  // TODO: Fetch from NVS
+  // it was synced with nvs at the beginning nd at the time of saving.
   return &functionality_status_;
 }
 
@@ -103,7 +103,7 @@ SET_SETTINGS_STATUS set_device_settings(const rfm_settings_saveable_t *settings)
 
 SET_DEVICE_SETTING_STATUS set_device_func_settings(const device_func_status_t *settings)
 {
-  // TODO: verify each value
+  // TODO: IMPORTANT: verify each value
 
   // scan_interval
   functionality_status_.scan_interval = settings->scan_interval;
