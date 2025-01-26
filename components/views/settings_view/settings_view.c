@@ -198,6 +198,10 @@ char *set_settings(const char *data)
 char *get_json_device_func_settings()
 {
   cJSON *root_object = cJSON_CreateObject();
+  if (root_object == NULL)
+  {
+    return NULL;
+  }
 
   device_func_status_t *device_func_settings = get_device_func_settings();
 

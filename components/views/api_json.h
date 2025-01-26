@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "cJSON.h"
+// TODO: IMPORTANT: Find all the CJSON related memory leaks using deepseek-ai
 
 bool status_view(char *response, size_t max_len);
 char *get_settings();
