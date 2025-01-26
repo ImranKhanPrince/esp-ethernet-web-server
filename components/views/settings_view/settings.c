@@ -208,7 +208,7 @@ char *get_json_device_func_settings()
   cJSON_AddNumberToObject(root_object, "trigger", device_func_settings->trigger);
 
   char *json_string = cJSON_PrintUnformatted(root_object);
-  strcat(json_string, "\n");
+  // strcat(json_string, "\n");
   cJSON_Delete(root_object); // Free JSON object
 
   return json_string;
@@ -237,8 +237,12 @@ char *set_func_settings(const char *data)
   if (cJSON_IsString(data_output_loc) && (data_output_loc->valuestring != NULL))
   {
     // TODO: check the size of the string and return error if it is too long
-    strncpy(device_function_stat.data_output_loc, data_output_loc->valuestring, sizeof(device_function_stat.data_output_loc) - 1);
-    device_function_stat.data_output_loc[sizeof(device_function_stat.data_output_loc) - 1] = '\0'; // Ensure null-termination
+    if (device_function_stat.data_output_loc != NULL)
+    {
+      free(device_function_stat.data_output_loc);
+      device_function_stat.data_output_loc = NULL;
+    }
+    device_function_stat.data_output_loc = strdup(data_output_loc->valuestring);
   }
   else
   {

@@ -87,7 +87,7 @@ typedef enum
 typedef enum
 {
   SET_DEVICE_SETTINGS_SUCCESS,
-  SET_DEVICE_SETTINGS_FAIL, // Generic error
+  SET_DEVICE_SETTINGS_FAIL, // Generic error or NVS failed
   SET_DEVICE_SETTING_INVALID_TRIGGER,
   SET_DEVICE_SETTING_INVALID_SCAN_MODE,
   SET_DEVICE_SETTING_INVALID_DATA_OUTPUT_LOC,
@@ -102,6 +102,7 @@ extern nvs_handle_t func_settings_handle;
 bool nvs_init();
 bool get_nvs_func_settings(device_func_status_t *func_settings);
 bool set_nvs_func_settings(device_func_status_t *func_settings);
+void print_device_func_settings(device_func_status_t *func_settings);
 
 #ifdef __cplusplus
 extern "C"

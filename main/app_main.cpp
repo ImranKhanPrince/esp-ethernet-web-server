@@ -27,45 +27,6 @@
 
 static const char *TAG = "eth_example";
 
-esp_err_t hello_get_handler(httpd_req_t *req)
-{
-    const char *resp_str = "Hello, World!";
-    httpd_resp_send(req, resp_str, HTTPD_RESP_USE_STRLEN);
-    return ESP_OK;
-}
-
-// Function to start the web server
-httpd_handle_t start_webserver(void)
-{
-    httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.server_port = 8000; // Set the server port to 8000
-
-    httpd_handle_t server = NULL;
-    if (httpd_start(&server, &config) == ESP_OK)
-    {
-        httpd_uri_t hello = {
-            .uri = "/",
-            .method = HTTP_GET,
-            .handler = hello_get_handler,
-            .user_ctx = NULL};
-        httpd_register_uri_handler(server, &hello);
-    }
-    else
-    {
-        ESP_LOGE(TAG, "Failed to start HTTP server");
-    }
-    return server;
-}
-
-// Function to stop the web server
-void stop_webserver(httpd_handle_t server)
-{
-    if (server)
-    {
-        httpd_stop(server);
-    }
-}
-
 /** Event handler for Ethernet events */
 static void eth_event_handler(void *arg, esp_event_base_t event_base,
                               int32_t event_id, void *event_data)
@@ -109,12 +70,15 @@ static void got_ip_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "ETHMASK:" IPSTR, IP2STR(&ip_info->netmask));
     ESP_LOGI(TAG, "ETHGW:" IPSTR, IP2STR(&ip_info->gw));
     ESP_LOGI(TAG, "~~~~~~~~~~~");
-    // httpd_handle_t server = start_webserver();
     start_web_server();
 }
 
 extern "C" void app_main(void)
 {
+    // Load Saved Settings
+    nvs_init();
+    get_nvs_func_settings(&functionality_status_);
+
     // Initialize Ethernet driver
     uint8_t eth_port_cnt = 0;
     esp_eth_handle_t *eth_handles;
@@ -192,12 +156,8 @@ extern "C" void app_main(void)
     // int n = Inventory(false);
     // printf("n=%d\n", n);
 
-    printf("data output location: %s\n", functionality_status_.data_output_loc);
+    print_device_func_settings(&functionality_status_);
 
-    nvs_init();
-    set_nvs_func_settings(&functionality_status_);
-    printf("data output location: %s\n", functionality_status_.data_output_loc);
-
-    get_nvs_func_settings(&functionality_status_);
-    printf("data output location: %s\n", functionality_status_.data_output_loc);
+    // functionality_status_.scan_interval = 800;
+    // set_nvs_func_settings(&functionality_status_);
 }
