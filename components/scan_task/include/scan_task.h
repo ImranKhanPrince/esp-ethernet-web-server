@@ -10,8 +10,15 @@
 
 #include "driver.h"
 
+struct ScanParams
+{
+  bool filter;
+  int offset;
+  char value[24]; // Size matches maskdata array
+};
+
 // cpp extern
-extern std::vector<ScanResult> single_scan();
+extern std::vector<ScanResult> single_scan(bool filter, int offset, char *value);
 // helper
 extern char *format_scan_result_arr(std::vector<ScanResult> scanResults);
 
@@ -23,7 +30,7 @@ void rtos_cont_scan_task(void *pvParams);
 extern "C"
 {
 #endif
-  extern bool start_cont_scan();
+  extern bool start_cont_scan(bool filter, int offset, char *value);
   extern bool stop_cont_scan();
 
 #ifdef __cplusplus

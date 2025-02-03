@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/Notebook/esp/v5.3/esp-idf/components/lwip
+# Install script for directory: C:/Users/Notebook/esp/v5.3.2/esp-idf/components/lwip
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

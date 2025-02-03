@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/Notebook/esp/v5.3/esp-idf/components/esp_driver_i2c
+# Install script for directory: C:/Users/Notebook/esp/v5.3.2/esp-idf/components/esp_driver_i2c
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

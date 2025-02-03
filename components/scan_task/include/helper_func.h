@@ -3,6 +3,13 @@
 #include "stdint-gcc.h"
 
 // const char *signedCharToString(signed char value);
+#ifndef MIN
+#define MIN(x, y) ((x) < (y) ? (x) : (y))
+#endif
+
+#ifndef MAX
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+#endif
 
 #ifdef __cplusplus
 extern "C"

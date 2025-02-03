@@ -27,6 +27,11 @@
 
 static const char *TAG = "eth_example";
 
+static void net_down_handler()
+{
+    stop_socket_msg_task();
+}
+
 /** Event handler for Ethernet events */
 static void eth_event_handler(void *arg, esp_event_base_t event_base,
                               int32_t event_id, void *event_data)
@@ -45,6 +50,7 @@ static void eth_event_handler(void *arg, esp_event_base_t event_base,
         break;
     case ETHERNET_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "Ethernet Link Down");
+        net_down_handler();
         break;
     case ETHERNET_EVENT_START:
         ESP_LOGI(TAG, "Ethernet Started");
@@ -70,8 +76,26 @@ static void got_ip_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "ETHMASK:" IPSTR, IP2STR(&ip_info->netmask));
     ESP_LOGI(TAG, "ETHGW:" IPSTR, IP2STR(&ip_info->gw));
     ESP_LOGI(TAG, "~~~~~~~~~~~");
+
+    printf("Starting web server...\n");
     start_web_server();
+    if (true)
+    {
+        printf("Starting msg socket \n");
+    } // TODO: keep a value in nvs and that will determine if socket sender will start or not
+
+    start_msg_sender_task();
 }
+
+static void lost_ip_event_handler(void *arg, esp_event_base_t event_base,
+                                  int32_t event_id, void *event_data)
+{
+    // TODO: Implement this. for ip loosing event
+    printf("IP LOST CHECK CONNECTION\n");
+    net_down_handler();
+}
+
+// TODO: after loading nvs if continuous scan is on then start the continuous task
 
 extern "C" void app_main(void)
 {
@@ -128,6 +152,7 @@ extern "C" void app_main(void)
     // Register user defined event handers
     ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, &eth_event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_LOST_IP, &lost_ip_event_handler, NULL));
 
     // Start Ethernet driver state machine
     for (int i = 0; i < eth_port_cnt; i++)

@@ -9,8 +9,8 @@
 static std::string tohex(const std::string &uid);
 
 static char *handle_stop_cont_scan();
-static char *handle_start_cont_scan();
-static char *handle_single_scan();
+static char *handle_start_cont_scan(bool filter, int offset, char *value);
+static char *handle_single_scan(bool filter, int offset, char *value);
 
 // {
 //     "auth_key": "1234",
@@ -24,7 +24,8 @@ static char *handle_single_scan();
 //    }
 // }
 char *handle_scan_command(const char *data)
-{
+
+{ // TODO: IMPORTANT: handle filters
   printf("LOG: handle_scan_command called\n");
   if (data == NULL)
   {
@@ -62,9 +63,39 @@ char *handle_scan_command(const char *data)
   int scan_mode = cJSON_GetNumberValue(scan_mode_obj);
 
   char *response;
+
+  cJSON *params_obj = cJSON_GetObjectItem(data_object, "params");
+  if (params_obj == NULL)
+  {
+    cJSON_Delete(root_object);
+    return strdup("{\"error\":\"params format invalid\"}\n");
+  }
+
+  // Extract individual params
+  cJSON *filter_obj = cJSON_GetObjectItem(params_obj, "filter");
+  cJSON *offset_obj = cJSON_GetObjectItem(params_obj, "offset");
+  cJSON *data_obj = cJSON_GetObjectItem(params_obj, "data");
+
+  if (filter_obj == NULL || !cJSON_IsBool(filter_obj) ||
+      offset_obj == NULL || !cJSON_IsNumber(offset_obj) ||
+      data_obj == NULL || !cJSON_IsString(data_obj))
+  {
+    cJSON_Delete(root_object);
+    return strdup("{\"error\":\"Invalid params\"}\n");
+  }
+
+  // Use the extracted params
+  bool filter = cJSON_IsTrue(filter_obj);
+  int offset = cJSON_GetNumberValue(offset_obj);
+  char *value = cJSON_GetStringValue(data_obj);
+
   if (scan_mode == SCAN_ONCE)
   {
-    const char *scan_response = handle_single_scan();
+
+    printf("LOG: Handling single scan with filter=%d, offset=%d, data=%s\n",
+           filter, offset, data);
+
+    const char *scan_response = handle_single_scan(filter, offset, value);
     if (scan_response == NULL)
     {
       return strdup("{\"error\":\"Failed to handle scan\"}\n");
@@ -78,7 +109,9 @@ char *handle_scan_command(const char *data)
   }
   else if (scan_mode == SCAN_CONTINUOUS)
   {
-    const char *response_json = handle_start_cont_scan();
+    printf("LOG: Handling single scan with filter=%d, offset=%d, data=%s\n",
+           filter, offset, value);
+    const char *response_json = handle_start_cont_scan(filter, offset, value);
     response = strdup(response_json);
   }
   else if (scan_mode == SCAN_OFF)
@@ -95,20 +128,20 @@ char *handle_scan_command(const char *data)
   return response;
 }
 
-char *handle_single_scan()
+char *handle_single_scan(bool filter, int offset, char *value)
 {
-  std::vector<ScanResult> scanResults = single_scan();
+  std::vector<ScanResult> scanResults = single_scan(filter, offset, value);
 
   return format_scan_result_arr(scanResults); // Return the dynamically allocated JSON string with newline
 }
 
-static char *handle_start_cont_scan()
+static char *handle_start_cont_scan(bool filter, int offset, char *value)
 {
   if (pxCont_scan_task_handle != NULL)
   {
     return "{\"error\": \"already running\"}";
   }
-  if (start_cont_scan())
+  if (start_cont_scan(filter, offset, value))
   {
     return "{\"status\": \"sending started according to setting\"}";
   }
