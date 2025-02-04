@@ -85,5 +85,6 @@
         "variant": "cpp",
         "global_status.h": "c"
     },
-    "todo-tree.tree.showCountsInTree": true
+    "todo-tree.tree.showCountsInTree": true,
+    "vim.useCtrlKeys": true
 }

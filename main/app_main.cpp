@@ -24,6 +24,7 @@
 #include "global_status.h"
 #include "http_message.h"
 #include "settings.h"
+#include "scan_task.h"
 
 static const char *TAG = "eth_example";
 
@@ -50,7 +51,10 @@ static void eth_event_handler(void *arg, esp_event_base_t event_base,
         break;
     case ETHERNET_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "Ethernet Link Down");
-        net_down_handler();
+        if (scan_info_.scan_mode == SCAN_CONTINUOUS)
+        {
+            net_down_handler();
+        }
         break;
     case ETHERNET_EVENT_START:
         ESP_LOGI(TAG, "Ethernet Started");
@@ -78,30 +82,31 @@ static void got_ip_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
     printf("Starting web server...\n");
-    start_web_server();
-    if (true)
+    start_web_server(); // For the api endpoints
+    if (scan_info_.scan_mode == SCAN_CONTINUOUS)
     {
-        printf("Starting msg socket \n");
-    } // TODO: keep a value in nvs and that will determine if socket sender will start or not
-
-    start_msg_sender_task();
+        start_msg_sender_task(); // for the sockets
+        start_cont_scan(scan_info_.filter, scan_info_.offset, scan_info_.value);
+    }
 }
 
 static void lost_ip_event_handler(void *arg, esp_event_base_t event_base,
                                   int32_t event_id, void *event_data)
 {
-    // TODO: Implement this. for ip loosing event
     printf("IP LOST CHECK CONNECTION\n");
-    net_down_handler();
+    if (scan_info_.scan_mode == SCAN_CONTINUOUS)
+    {
+        net_down_handler();
+    }
 }
-
-// TODO: after loading nvs if continuous scan is on then start the continuous task
 
 extern "C" void app_main(void)
 {
     // Load Saved Settings
     nvs_init();
     get_nvs_func_settings(&functionality_status_);
+    nvs_load_scan_mode();
+    // TODO: IMPORTANT save and load scan status. from/to nvs. start continuous scan if needed
 
     // Initialize Ethernet driver
     uint8_t eth_port_cnt = 0;

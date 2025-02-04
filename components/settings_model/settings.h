@@ -72,15 +72,27 @@ typedef struct
   bool device_beep;        // Device beep (boolean)
 } rfm_settings_saveable_t; // rf module settings
 
+typedef struct
+{
+  SCAN_MODES scan_mode;
+  bool filter;
+  int offset;
+  char value[24];
+} scan_info_t;
+
 // TODO: LATER: use getter and setter for nvs and variable sync
+
 extern device_func_status_t functionality_status_;
 extern rfm_settings_all_t settings_;
 extern nvs_handle_t func_settings_handle;
+extern scan_info_t scan_info_;
 
 bool nvs_init();
 bool get_nvs_func_settings(device_func_status_t *func_settings);
 bool set_nvs_func_settings(device_func_status_t *func_settings);
 void print_device_func_settings(device_func_status_t *func_settings);
+bool nvs_save_scan_mode();
+bool nvs_load_scan_mode();
 
 #ifdef __cplusplus
 extern "C"

@@ -9,7 +9,7 @@
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
 
-#define SOCKET_TIMEOUT_MS 5000
+#define SOCKET_TIMEOUT_MS 1000
 
 #define TAG "http_message.cpp"
 #define SOCKET_CLOSE_BIT BIT0
@@ -158,27 +158,11 @@ static void socket_listener_task(void *pvParameters)
     vTaskDelete(NULL);
     return;
   }
+  scan_msg_sock_ = sock;
 
   char rx_buffer[128];
   while (true)
   {
-    // int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
-    // if (len < 0)
-    // {
-    //   ESP_LOGE(TAG, "Recv failed: errno %d", errno);
-    //   break;
-    // }
-    // else if (len == 0)
-    // {
-    //   ESP_LOGI(TAG, "Connection closed");
-    //   break;
-    // }
-    // else
-    // {
-    //   rx_buffer[len] = 0; // Null-terminate the received data
-    //   ESP_LOGI(TAG, "Received: %s", rx_buffer);
-    // }
-
     // Check FIFO queue for messages to send
     char tx_buffer[1024];
     if (xQueueReceive(fifo_queue, &tx_buffer, pdMS_TO_TICKS(1000)) == pdTRUE)
@@ -189,124 +173,13 @@ static void socket_listener_task(void *pvParameters)
     if (bits & SOCKET_CLOSE_BIT)
     {
       ESP_LOGI(TAG, "Socket close signal received");
+      scan_msg_sock_ = -1;
       close(sock);
       vTaskDelete(NULL);
       break;
     }
   }
-
+  scan_msg_sock_ = -1;
   close(sock);
-  vTaskDelete(NULL);
-}
-
-bool send_json_http_message(char *message)
-{
-  if (strcmp(functionality_status_.data_output_loc, "none") == 0)
-  {
-    printf("No link available..\n");
-    return false;
-  }
-  else if (false)
-  {
-    // TODO: IMPORTANT: URL formatting error condition
-    return false;
-  }
-
-  data_passed_bin_sem = xSemaphoreCreateBinary();
-  // if (xSemaphoreTake(mutex_http, portMAX_DELAY) == pdTRUE)
-  // {
-  //   xSemaphoreGive(mutex_http);
-  // }
-
-  xTaskCreate(&http_client_task, "http_client_task", 4 * 1024, (void *)message, 5, NULL);
-
-  xSemaphoreTake(data_passed_bin_sem, portMAX_DELAY); // wait till the semaphore is released
-
-  printf("LOG-message: %s\n", message);
-  return true;
-}
-
-esp_err_t http_event_handler(esp_http_client_event_t *evt)
-{
-  switch (evt->event_id)
-  {
-  case HTTP_EVENT_ERROR:
-    ESP_LOGE(TAG, "HTTP_EVENT_ERROR");
-    break;
-  case HTTP_EVENT_ON_CONNECTED:
-    ESP_LOGI(TAG, "HTTP_EVENT_ON_CONNECTED");
-    break;
-  case HTTP_EVENT_HEADER_SENT:
-    ESP_LOGI(TAG, "HTTP_EVENT_HEADER_SENT");
-    break;
-  case HTTP_EVENT_ON_HEADER:
-    ESP_LOGI(TAG, "HTTP_EVENT_ON_HEADER, key=%s, value=%s", evt->header_key, evt->header_value);
-    break;
-  case HTTP_EVENT_ON_DATA:
-    ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
-    if (evt->data_len > 0)
-    {
-      ESP_LOGI(TAG, "Response: %.*s", evt->data_len, (char *)evt->data);
-    }
-    break;
-  case HTTP_EVENT_DISCONNECTED:
-    ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
-    break;
-  case HTTP_EVENT_ON_FINISH: // New case added
-    ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
-    break;
-  case HTTP_EVENT_REDIRECT: // New case added
-    ESP_LOGI(TAG, "HTTP_EVENT_REDIRECT");
-    break;
-  default:
-    ESP_LOGW(TAG, "Unhandled event: %d", evt->event_id);
-    break;
-  }
-  return ESP_OK;
-}
-
-static void http_client_task(void *pvParameters)
-{
-  // if socket exist then send msg through socket.
-
-  char *message = (char *)pvParameters;
-
-  xSemaphoreGive(data_passed_bin_sem); // data copy done releasing binary semaphore
-
-  // vTaskDelay(3000 / portTICK_PERIOD_MS); // wait for some moment so that got ip from router
-  // .url = WEB_SERVER_URL
-  esp_http_client_config_t config = {
-      .url = functionality_status_.data_output_loc,
-      .timeout_ms = 3000,
-      .event_handler = http_event_handler,
-      .keep_alive_enable = false, // Ensures the connection is closed after use
-  };
-
-  esp_http_client_handle_t client = esp_http_client_init(&config);
-
-  // Set HTTP POST Method
-  esp_http_client_set_method(client, HTTP_METHOD_POST);
-
-  // Set POST data
-  esp_http_client_set_post_field(client, message, strlen(message));
-
-  // Perform HTTP request
-  esp_err_t err = esp_http_client_perform(client);
-
-  if (err == ESP_OK)
-  {
-    ESP_LOGI(TAG, "HTTP POST Status = %d, content_length = %lld",
-             esp_http_client_get_status_code(client),
-             esp_http_client_get_content_length(client));
-  }
-  else
-  {
-    ESP_LOGE(TAG, "HTTP POST request failed: %s", esp_err_to_name(err));
-  }
-
-  // Clean up
-  esp_http_client_cleanup(client);
-
-  // Delete the task
   vTaskDelete(NULL);
 }

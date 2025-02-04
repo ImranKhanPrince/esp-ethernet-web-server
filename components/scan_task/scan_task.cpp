@@ -117,6 +117,19 @@ std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
 bool start_cont_scan(bool filter, int offset, char *value)
 {
   printf("LOG: Start cont scan called\n");
+  scan_info_.scan_mode = SCAN_CONTINUOUS;
+  if (filter == true)
+  {
+    scan_info_.filter = filter;
+    scan_info_.offset = offset;
+    // free(scan_info_.value);
+    strncpy(scan_info_.value, value, sizeof(scan_info_.value) - 1);
+  }
+  else
+  {
+    scan_info_.filter = filter;
+  }
+  nvs_save_scan_mode();
 
   ScanParams *params = (ScanParams *)pvPortMalloc(sizeof(ScanParams));
   if (params == NULL)
@@ -165,10 +178,6 @@ bool start_cont_scan(bool filter, int offset, char *value)
   return false;
 }
 
-// TODO: bugs stack overflow
-// TODO: scan isn't stopping so the mutex is not getting released after each scan
-// TODO:
-
 static void check_stack_watermark(TaskHandle_t task_handle)
 {
   UBaseType_t watermark = uxTaskGetStackHighWaterMark(task_handle);
@@ -200,15 +209,13 @@ void rtos_cont_scan_task(void *pvParams)
       printf("Scanning...\n");
       scanResults = single_scan(params->filter, params->offset, params->value);
 
-      if (scanResults.size() != 0 && i % SEND_DATA_AFTER_N_SCAN == 0)
+      if (scanResults.size() != 0 &&
+          i % SEND_DATA_AFTER_N_SCAN == 0 &&
+          scan_msg_sock_ > 0)
       {
         scan_json_data = format_scan_result_arr(scanResults); // removes duplicate also
-        // TODO: MAYBE - add a direct socket msg along with HTTP
-        // status will say if socket is online or not use esp_http client
         printf("LOG: cont scan data %s\n", scan_json_data);
-        // send_json_http_message(scan_json_data); //TODO: causes buffer overflow in quick scan
         write_to_sock_fifo(scan_json_data);
-
         free(scan_json_data);
         scan_json_data = NULL;
         scanResults.clear();
@@ -245,6 +252,9 @@ bool stop_cont_scan()
     vSemaphoreDelete(mutex_continuous_scan_busy);
     mutex_continuous_scan_busy = NULL;
     stop_socket_msg_task(); // asyncronously turns off the socket msg task
+    scan_info_.scan_mode = SCAN_OFF;
+    scan_info_.filter = false;
+    nvs_save_scan_mode();
 
     vTaskDelete(pxCont_scan_task_handle);
     pxCont_scan_task_handle = NULL;

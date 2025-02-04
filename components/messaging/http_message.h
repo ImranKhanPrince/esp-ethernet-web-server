@@ -16,7 +16,6 @@ extern "C"
   extern int scan_msg_sock_;
 
   extern SemaphoreHandle_t mutex_http;
-  extern bool send_json_http_message(char *message);
   extern int create_socket_connection(const char *host, uint16_t port);
   extern void start_msg_sender_task();
   extern bool send_socket_msg(int sock, const char *msg);

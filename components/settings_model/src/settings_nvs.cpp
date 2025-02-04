@@ -23,7 +23,6 @@ bool nvs_init()
 bool get_nvs_func_settings(device_func_status_t *func_settings)
 {
   bool ret_code = true;
-
   esp_err_t err = nvs_open("func-setting", NVS_READONLY, &func_settings_handle);
   if (err != ESP_OK)
   {
@@ -134,5 +133,69 @@ bool set_nvs_func_settings(device_func_status_t *func_settings)
   nvs_close(func_settings_handle);
   func_settings_handle = NULL;
   // return
+  return true;
+}
+
+bool nvs_save_scan_mode()
+{
+  esp_err_t err;
+  if (func_settings_handle != NULL)
+  {
+    printf("Nvs handle is busy in another task\n");
+    return false;
+  }
+  err = nvs_open("func_settings", NVS_READWRITE, &func_settings_handle);
+  if (err != ESP_OK)
+  {
+    printf("Error opening nvs handle!\n");
+    return false;
+  }
+  err = nvs_set_blob(func_settings_handle, "scan_info", (const void *)&scan_info_, sizeof(scan_info_));
+  if (err != ESP_OK)
+  {
+    printf("Failed to write scan_info in nvs!\n");
+    nvs_close(func_settings_handle);
+    func_settings_handle = NULL;
+    return false;
+  }
+
+  err = nvs_commit(func_settings_handle);
+  if (err != ESP_OK)
+  {
+    printf("Failed to commit in nvs!\n");
+    return false;
+  }
+
+  nvs_close(func_settings_handle);
+  func_settings_handle = NULL;
+  return true;
+}
+
+bool nvs_load_scan_mode()
+{
+  esp_err_t err;
+  if (func_settings_handle != NULL)
+  {
+    printf("Nvs handle is busy in another task\n");
+    return false;
+  }
+  err = nvs_open("func_settings", NVS_READONLY, &func_settings_handle);
+  if (err != ESP_OK)
+  {
+    printf("Failed to Open NVS!\n");
+    return false;
+  }
+  size_t required_size = sizeof(scan_info_);
+  err = nvs_get_blob(func_settings_handle, "scan_info", &scan_info_, &required_size);
+  if (err != ESP_OK)
+  {
+    printf("Failed to Read scan_info in nvs!\n");
+    nvs_close(func_settings_handle);
+    func_settings_handle = NULL;
+    return false;
+  }
+
+  nvs_close(func_settings_handle);
+  func_settings_handle = NULL;
   return true;
 }

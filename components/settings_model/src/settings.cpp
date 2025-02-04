@@ -25,6 +25,12 @@ device_func_status_t functionality_status_ = {
     .data_output_loc = strdup("http://192.168.1.12:3001/"),
     .trigger = NO_TRIGGER};
 
+scan_info_t scan_info_ = {
+    .scan_mode = SCAN_OFF,
+    .filter = false,
+    .offset = 0,
+    .value = "E2"};
+
 rfm_settings_all_t *get_device_settings()
 {
   // These functions Gets called one at a time which is handled by the http_server component. so no worry of concurrency.

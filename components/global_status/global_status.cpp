@@ -28,7 +28,7 @@ void rtos_check_uhf_module_task(void *pvParams)
       printf("LOG: checking uhf module taks\n");
       // this is the shortest possible command for each  module that's why this is used
       // char error[50] = "";
-      // TODO: LATER: find out why physical disconnection cases this issue where GetGPI returns 0xFF isnted of -1
+      // TODO: LATER: find out why physical disconnection cases this issue where GetGPI returns 0xFF isnted of -1. same when scans continuously
       char status = GetGPI(0x01);
       if (status == 0x00 || status == 0x01)
       {

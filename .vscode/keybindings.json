@@ -1,0 +1,22 @@
+[
+    {
+        "key": "h",
+        "command": "list.collapse",
+        "when": "explorerViewletFocus"
+    },
+    {
+        "key": "l",
+        "command": "list.expand",
+        "when": "explorerViewletFocus"
+    },
+    {
+        "key": "j",
+        "command": "list.focusDown",
+        "when": "explorerViewletFocus"
+    },
+    {
+        "key": "k",
+        "command": "list.focusUp",
+        "when": "explorerViewletFocus"
+    }
+]
