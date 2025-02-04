@@ -1,6 +1,7 @@
 set(SOURCES "api_info_view/api_json.c" 
             "settings_view/settings_view.c"
             "scan_view/scan_view.cpp"
+            "scan_view/memory_view.cpp"
             )
 
 idf_component_register(SRCS ${SOURCES}

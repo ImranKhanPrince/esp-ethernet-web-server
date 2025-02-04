@@ -206,6 +206,29 @@ esp_err_t handle_post_scan(httpd_req_t *req)
   return ESP_OK;
 }
 
+esp_err_t handle_memory_commands(httpd_req_t *req)
+{
+  httpd_resp_set_type(req, "application/json");
+
+  int content_length = req->content_len;
+  if (content_length > 500)
+  {
+    ESP_LOGE(TAG, "Content length is too large");
+    httpd_resp_send_404(req);
+    return ESP_FAIL;
+  }
+  char data[content_length];
+  int stat = httpd_req_recv(req, data, content_length);
+  if (stat <= 0)
+  {
+    httpd_resp_send_408(req);
+    return ESP_FAIL;
+  }
+  char *response = view_handle_memory_command(data);
+  httpd_resp_send(req, response, strlen(response));
+  return ESP_OK;
+}
+
 // TODO: LATER: TO give forward slash at the end or to not give that is the question.
 // TODO: LATER: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
 // TODO: IMPORTANT: handle api if the reader is not connected
@@ -267,6 +290,12 @@ void start_web_server()
         .method = HTTP_POST,
         .handler = handle_post_scan};
     httpd_register_uri_handler(server, &api_post_scan_uri);
+
+    httpd_uri_t api_mem_commands_uri = {
+        .uri = "/api/memory",
+        .method = HTTP_POST,
+        .handler = handle_memory_commands};
+    httpd_register_uri_handler(server, &api_mem_commands_uri);
 
     httpd_uri_t css_uri = {
         .uri = "/assets/styles/style.css",

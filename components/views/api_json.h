@@ -12,10 +12,14 @@ char *set_settings(const char *data);
 char *get_json_device_func_settings();
 char *set_func_settings(const char *data);
 
+char *get_tid_memory(const char *data);
+char *get_usr_memory(const char *data);
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+  char *view_handle_memory_command(const char *data);
   char *handle_scan_command(const char *data);
 #ifdef __cplusplus
 }
