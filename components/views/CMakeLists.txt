@@ -5,8 +5,8 @@ set(SOURCES "api_info_view/api_json.c"
             )
 
 idf_component_register(SRCS ${SOURCES}
-                       INCLUDE_DIRS "." "include" 
-                       REQUIRES esp_http_server settings_model json scan_task global_status
+                       INCLUDE_DIRS "." 
+                       REQUIRES esp_http_server settings_model json uhf_operations global_status
 )
 
 
