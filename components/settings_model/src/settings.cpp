@@ -23,7 +23,8 @@ rfm_settings_all_t settings_ = {
 device_func_status_t functionality_status_ = {
     .scan_interval = 0,
     .data_output_loc = strdup("http://192.168.1.12:3001/"),
-    .trigger = NO_TRIGGER};
+    .trigger = NO_TRIGGER,
+    .auth_key = "1234"};
 
 scan_info_t scan_info_ = {
     .scan_mode = SCAN_OFF,
@@ -118,6 +119,9 @@ SET_DEVICE_SETTING_STATUS set_device_func_settings(const device_func_status_t *s
   free(functionality_status_.data_output_loc);
   functionality_status_.data_output_loc = NULL;
   functionality_status_.data_output_loc = strdup(settings->data_output_loc);
+
+  strncpy(functionality_status_.auth_key, settings->auth_key, SIZE_OF_AUTH_KEY - 1);
+  functionality_status_.auth_key[SIZE_OF_AUTH_KEY - 1] = '\0'; // Ensure null-termination
 
   // data_output_loc
   functionality_status_.trigger = settings->trigger;

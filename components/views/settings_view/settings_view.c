@@ -108,7 +108,7 @@ char *set_settings(const char *data)
   }
 
   // verify the auth key
-  if (strcmp(auth_key->valuestring, "1234") != 0)
+  if (strcmp(auth_key->valuestring, functionality_status_.auth_key) != 0)
   {
     cJSON_Delete(root);
     return "{\"error\":\"Invalid Auth Key\"}\n";
@@ -221,11 +221,28 @@ char *set_func_settings(const char *data)
   cJSON *root_object = cJSON_Parse(data);
   if (root_object == NULL)
   {
-    return NULL;
+    cJSON_Delete(root_object);
+    return "{\"error\":\"Invalid JSON format\"}\n";
   }
-  device_func_status_t device_function_stat = {0}; // Zero-initialize all fields
+  cJSON *password = cJSON_GetObjectItem(root_object, "password");
+  if (password == NULL)
+  {
+    cJSON_Delete(root_object);
+    return "{\"error\":\"Invalid password\"}\n";
+  }
+  // ------Password Verification
+  if (strcmp(password->valuestring, credentials_.current_pass) != 0)
+  {
+    cJSON_Delete(root_object);
+    printf("LOG: Invalid Password\n");
+    return "{\"error\":\"Invalid password\"}\n";
+  }
+  //----- END Password Verification
 
-  cJSON *scan_interval = cJSON_GetObjectItem(root_object, "scan_interval");
+  device_func_status_t device_function_stat = {0}; // Zero-initialize all fields
+  cJSON *data_obj = cJSON_GetObjectItem(root_object, "data");
+
+  cJSON *scan_interval = cJSON_GetObjectItem(data_obj, "scan_interval");
   if (cJSON_IsNumber(scan_interval))
   {
     device_function_stat.scan_interval = scan_interval->valueint;
@@ -236,7 +253,7 @@ char *set_func_settings(const char *data)
     return "{\"error\":\"Invalid scan_interval format\"}\n";
   }
 
-  cJSON *data_output_loc = cJSON_GetObjectItem(root_object, "data_output_loc");
+  cJSON *data_output_loc = cJSON_GetObjectItem(data_obj, "data_output_loc");
   if (cJSON_IsString(data_output_loc) && (data_output_loc->valuestring != NULL))
   {
     if (device_function_stat.data_output_loc != NULL)
@@ -251,7 +268,7 @@ char *set_func_settings(const char *data)
     return "{\"error\":\"Invalid data_output_loc format\"}\n";
   }
 
-  cJSON *trigger = cJSON_GetObjectItem(root_object, "trigger");
+  cJSON *trigger = cJSON_GetObjectItem(data_obj, "trigger");
   if (cJSON_IsNumber(trigger))
   {
     device_function_stat.trigger = trigger->valueint;
@@ -261,6 +278,27 @@ char *set_func_settings(const char *data)
     cJSON_Delete(root_object);
     return "{\"error\":\"Invalid trigger format\"}\n";
   }
+  cJSON *auth_key = cJSON_GetObjectItem(data_obj, "auth_key");
+  if (auth_key == NULL)
+  {
+    cJSON_Delete(root_object);
+    return "{\"error\":\"Invalid auth_key\"}\n";
+  }
+  strcpy(device_function_stat.auth_key, auth_key->valuestring);
+
+  cJSON *new_pass = cJSON_GetObjectItem(data_obj, "new_pass");
+  if (new_pass == NULL)
+  {
+    cJSON_Delete(root_object);
+    return "{\"error\":\"Invalid new_pass\"}\n";
+  }
+
+  // QUICK SET HERE here withoutcalling the model
+  strcpy(credentials_.current_pass, new_pass->valuestring);
+  store_serial_number_and_default_password(credentials_.serial_num,
+                                           credentials_.current_pass,
+                                           credentials_.default_pass);
+
   cJSON_Delete(root_object);
   set_device_func_settings(&device_function_stat); // call to model
 

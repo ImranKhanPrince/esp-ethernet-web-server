@@ -40,6 +40,7 @@ void rtos_check_uhf_module_task(void *pvParams)
       {
         printf("\ngpi: %02X\n", status); // ff means -1 uint to int conversion
         printf("LOG: UHF disconnected\n");
+        // TODO: MAYBE: make the gui to output a message
         set_uhf_status(UHF_DISCONNECTED);
       }
       xSemaphoreGive(xUhfUartMutex);

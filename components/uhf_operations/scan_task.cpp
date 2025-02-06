@@ -14,7 +14,6 @@ SemaphoreHandle_t binsmphr_cont_task_params = NULL;
 static const char *TAG = "scan_task";
 #define SEND_DATA_AFTER_N_SCAN 3
 
-// TODO: learn this function
 bool hex_string_to_byte_array(const char *hex_string, unsigned char *byte_array, size_t *array_length)
 {
   if (hex_string == nullptr || byte_array == nullptr || array_length == nullptr)
@@ -63,11 +62,8 @@ std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
         printf("LOG: Failed to convert hex string\n");
         xSemaphoreGive(xUhfUartMutex);
         return scanResults;
-        // TODO: has a bug when given full EPC request doesn't respond
+        // TODO: BUG: has a bug when given full EPC request doesn't respond. maybe due to epc size and null terminator
       }
-      //   unsigned char maskdata[] = {0x33, 0x30};
-      //// SetFilter(int maskAdrInByte, int maskLenInByte, unsigned char *maskDataByte);
-      //   SetFilter(0, 2, (unsigned char*) maskdata);
 
       SetFilter(offset, maskdata_length, maskdata);
       int n = Inventory(true);

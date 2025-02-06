@@ -1,5 +1,6 @@
 #include "api_json.h"
 #include "tag_memory_ops.h"
+#include "settings.h"
 // MEMORY OPERATIONS REQUIES SCAN TO happen thats why in scan view
 
 char *view_handle_memory_command(const char *data)
@@ -15,7 +16,7 @@ char *view_handle_memory_command(const char *data)
   }
   // ----Auth
   cJSON *auth_key = cJSON_GetObjectItem(command_json, "auth_key");
-  if (auth_key == NULL || strcmp(auth_key->valuestring, "1234") != 0)
+  if (auth_key == NULL || strcmp(auth_key->valuestring, functionality_status_.auth_key) != 0)
   {
     cJSON_Delete(command_json);
     return strdup("{\"error\":\"Invalid auth key\"}\n");

@@ -3,6 +3,11 @@
 #include <stdbool.h>
 #include "nvs_flash.h"
 
+//+1 for null terminator
+#define SIZE_OF_AUTH_KEY 4 + 1
+#define SIZE_OF_SERIAL_NUMBER 10 + 1
+#define SIZE_OF_PASSWORD 10 + 1
+
 typedef enum
 {
   NO_TRIGGER,
@@ -60,6 +65,7 @@ typedef struct
   int scan_interval;     // if cont scan then interval
   char *data_output_loc; // need to use strdup and free // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
   TRIGGER trigger;
+  char auth_key[SIZE_OF_AUTH_KEY];
 } device_func_status_t; // rf module settings
 // TODO: IMPORTANT: store encryption key here too and use password to set this settings.
 // data_output - array[sd, link{ip, port, encryption_key}]
@@ -80,12 +86,20 @@ typedef struct
   char value[24];
 } scan_info_t;
 
+typedef struct
+{
+  char serial_num[10 + 1];
+  char default_pass[10 + 1];
+  char current_pass[10 + 1];
+} credentials_t;
+
 // TODO: LATER: use getter and setter for nvs and variable sync
 
 extern device_func_status_t functionality_status_;
 extern rfm_settings_all_t settings_;
 extern nvs_handle_t func_settings_handle;
 extern scan_info_t scan_info_;
+extern credentials_t credentials_;
 
 bool nvs_init();
 bool get_nvs_func_settings(device_func_status_t *func_settings);
@@ -93,6 +107,8 @@ bool set_nvs_func_settings(device_func_status_t *func_settings);
 void print_device_func_settings(device_func_status_t *func_settings);
 bool nvs_save_scan_mode();
 bool nvs_load_scan_mode();
+
+uint32_t load_increment_store_restart_counter_till_last_flash(void);
 
 #ifdef __cplusplus
 extern "C"
@@ -105,6 +121,10 @@ extern "C"
   SET_DEVICE_SETTING_STATUS
   set_device_func_settings(const device_func_status_t *settings);
 
+  void store_serial_number_and_default_password(const char *serial_number, const char *cur_password, const char *def_password);
+  bool load_serial_number_and_default_password(char *serial_number, size_t serial_number_size,
+                                               char *cur_password, size_t cur_password_size,
+                                               char *def_password, size_t def_pass_size);
 #ifdef __cplusplus
 }
 #endif //__cplusplus

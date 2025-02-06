@@ -229,7 +229,6 @@ esp_err_t handle_memory_commands(httpd_req_t *req)
   return ESP_OK;
 }
 
-// TODO: LATER: TO give forward slash at the end or to not give that is the question.
 // TODO: LATER: Each of the endpoint([GET] /api/settings [POST] /api/settings) need a documentation that tells what is the key point like the link need to math exact etc etc
 // TODO: IMPORTANT: handle api if the reader is not connected
 // TODO: IMPORTANT: authenticate like a default pass like router. user can use that pass to set settings nad encryption key however if they want to change the password then need encryption[] must.
@@ -245,7 +244,7 @@ void start_web_server()
 
   ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);
 
-  //=================== ROUTER STAYS HERE=================================
+  //=================== ROUTER STAYS HERE================================= No formward slash in the links
   if (httpd_start(&server, &config) == ESP_OK)
   {
     httpd_uri_t root_uri = {

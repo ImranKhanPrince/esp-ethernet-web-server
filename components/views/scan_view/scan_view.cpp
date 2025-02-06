@@ -25,7 +25,7 @@ static char *handle_single_scan(bool filter, int offset, char *value);
 // }
 char *handle_scan_command(const char *data)
 
-{ // TODO: IMPORTANT: handle filters
+{
   printf("LOG: handle_scan_command called\n");
   if (data == NULL)
   {
@@ -41,7 +41,7 @@ char *handle_scan_command(const char *data)
   // --------Auth
   cJSON *auth_key = cJSON_GetObjectItem(root_object, "auth_key"); // a simple string/obj
 
-  if (auth_key == NULL || strcmp(auth_key->valuestring, "1234") != 0)
+  if (auth_key == NULL || strcmp(auth_key->valuestring, functionality_status_.auth_key) != 0)
   {
     cJSON_Delete(root_object);
     return strdup("{\"error\":\"Invalid Auth Key\"}\n");

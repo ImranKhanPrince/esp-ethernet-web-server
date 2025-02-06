@@ -26,7 +26,24 @@
 #include "settings.h"
 #include "scan_task.h"
 
-static const char *TAG = "eth_example";
+// TODO: this will come from CMAKELIST define;
+#ifdef CMAKE_SERIAL_NO
+#define SERIAL_NO CMAKE_SERIAL_NO
+#else
+#define SERIAL_NO "J4221-0001"
+#endif
+
+#ifdef CMAKE_DEFAULT_PASS
+#define DEFAULT_PASS CMAKE_DEFAULT_PASS
+#else
+#define DEFAULT_PASS "0123456789"
+#endif
+
+static const char *TAG = "APP_MAIN";
+
+credentials_t credentials_ = {
+    .serial_num = SERIAL_NO,
+    .default_pass = DEFAULT_PASS};
 
 static void net_down_handler()
 {
@@ -102,11 +119,27 @@ static void lost_ip_event_handler(void *arg, esp_event_base_t event_base,
 
 extern "C" void app_main(void)
 {
+
+    uint32_t restart_counter = load_increment_store_restart_counter_till_last_flash();
+    printf("restart_counter: %ld\n", restart_counter);
+    if (restart_counter <= 1)
+    {
+        strcpy(credentials_.current_pass, credentials_.default_pass);
+        store_serial_number_and_default_password(credentials_.serial_num,
+                                                 credentials_.current_pass,
+                                                 credentials_.default_pass);
+    }
+
+    load_serial_number_and_default_password(credentials_.serial_num, sizeof(credentials_.serial_num),
+                                            credentials_.current_pass, sizeof(credentials_.current_pass),
+                                            credentials_.default_pass, sizeof(credentials_.default_pass));
+
+    // when loading the firmware first time uncomment this line
+
     // Load Saved Settings
     nvs_init();
     get_nvs_func_settings(&functionality_status_);
     nvs_load_scan_mode();
-    // TODO: IMPORTANT save and load scan status. from/to nvs. start continuous scan if needed
 
     // Initialize Ethernet driver
     uint8_t eth_port_cnt = 0;
