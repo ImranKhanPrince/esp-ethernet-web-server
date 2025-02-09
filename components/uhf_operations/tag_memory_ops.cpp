@@ -57,6 +57,7 @@ char *get_tid_memory(char *epc_num)
 }
 
 char *get_usr_memory(char *epc_num, int wnum, int windex)
+
 {
 
   int epc_size = strlen(epc_num);
@@ -84,4 +85,45 @@ char *get_usr_memory(char *epc_num, int wnum, int windex)
   char buf[sizeof(data_str) + 20];
   sprintf(buf, "{\"user_memory\":\"%s\"}", data_str);
   return strdup(buf);
+}
+
+MEM_WRITE_STAUTUS change_epc(char *old_epc, char *new_epc)
+{
+  unsigned char new_epc_byte_array[MIN_EPC_STR_SIZE / 2];
+  unsigned char old_epc_byte_array[MIN_EPC_STR_SIZE / 2];
+
+  hexstr_to_byte_array(new_epc, new_epc_byte_array, sizeof(new_epc_byte_array));
+  hexstr_to_byte_array(old_epc, old_epc_byte_array, sizeof(old_epc_byte_array));
+  if (!TagExists(old_epc_byte_array, sizeof(old_epc_byte_array)))
+  {
+    return TAG_NOT_FOUND;
+  }
+
+  bool ok = WriteEpc(old_epc_byte_array, sizeof(old_epc_byte_array), new_epc_byte_array);
+  if (!ok)
+  {
+    return MEM_WRITE_FAILED;
+  }
+  return MEM_WRITE_SUCCESSFUL;
+}
+
+MEM_WRITE_STAUTUS change_user_mem(char *epc_num, char *data, int wnum, int windex)
+{
+  unsigned char epc_byte_array[MIN_EPC_STR_SIZE / 2];
+  unsigned char data_byte_array[strlen(data) / 2];
+  printf("EPC: %s\n", epc_num);
+  hexstr_to_byte_array(epc_num, epc_byte_array, sizeof(epc_byte_array));
+  hexstr_to_byte_array(data, data_byte_array, sizeof(data_byte_array));
+  print_byte_array(epc_byte_array, sizeof(epc_byte_array));
+
+  if (!TagExists(epc_byte_array, sizeof(epc_byte_array)))
+  {
+    return TAG_NOT_FOUND;
+  }
+  bool ok = Write(epc_byte_array, sizeof(epc_byte_array), data_byte_array, sizeof(data_byte_array), windex, MEM_USER);
+  if (!ok)
+  {
+    return MEM_WRITE_FAILED;
+  }
+  return MEM_WRITE_SUCCESSFUL;
 }
