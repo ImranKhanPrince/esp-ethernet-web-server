@@ -202,15 +202,31 @@ extern "C" void app_main(void)
 
     // start uhf module at last bcz it takes 1s to start once powered
     if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
+
     {
-        if (!OpenComPort("com3", 115200))
+        bool connected = false;
+        connected = OpenComPort("com3", 57600);
+
+        if (connected)
         {
-            printf("Failed to open COM port.\n");
+            printf("Successfully connected with 57600 baud\n");
+            set_uhf_status(UHF_CONNECTED);
         }
         else
         {
-            printf("COM port opened successfully.\n");
-            set_uhf_status(UHF_CONNECTED);
+            CloseComPort();
+            connected = OpenComPort("com3", 115200);
+            if (!connected)
+            {
+                CloseComPort();
+                printf("Failed to open com port!\n");
+                set_uhf_status(UHF_DISCONNECTED);
+            }
+            else
+            {
+                printf("Successfuly connected with 115200 baud\n");
+                set_uhf_status(UHF_CONNECTED);
+            }
         }
         xSemaphoreGive(xUhfUartMutex);
     }

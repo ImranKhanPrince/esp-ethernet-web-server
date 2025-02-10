@@ -8,6 +8,7 @@
 #define MIN_EPC_STR_SIZE 24
 #define WORD_TO_BYTE 2
 #define BYTE_TO_STR 2
+#define STR_TO_BYTE 2
 
 char *get_tid_memory(char *epc_num)
 {
@@ -109,18 +110,25 @@ MEM_WRITE_STAUTUS change_epc(char *old_epc, char *new_epc)
 
 MEM_WRITE_STAUTUS change_user_mem(char *epc_num, char *data, int wnum, int windex)
 {
-  unsigned char epc_byte_array[MIN_EPC_STR_SIZE / 2];
-  unsigned char data_byte_array[strlen(data) / 2];
-  printf("EPC: %s\n", epc_num);
+  unsigned char epc_byte_array[MIN_EPC_STR_SIZE / WORD_TO_BYTE];
+  // unsigned char data_byte_array[(data_str_size) / WORD_TO_BYTE];
+  // ABCD =4 , ABCD = 2byte , ABCD = 1 word
+  unsigned char data_byte_array[strlen(data) / STR_TO_BYTE];
   hexstr_to_byte_array(epc_num, epc_byte_array, sizeof(epc_byte_array));
   hexstr_to_byte_array(data, data_byte_array, sizeof(data_byte_array));
-  print_byte_array(epc_byte_array, sizeof(epc_byte_array));
 
-  if (!TagExists(epc_byte_array, sizeof(epc_byte_array)))
-  {
-    return TAG_NOT_FOUND;
-  }
-  bool ok = Write(epc_byte_array, sizeof(epc_byte_array), data_byte_array, sizeof(data_byte_array), windex, MEM_USER);
+  print_byte_array(epc_byte_array, sizeof(epc_byte_array));
+  printf("USR DATA\n");
+  print_byte_array(data_byte_array, sizeof(data_byte_array));
+  // WRITING FAILS IF THIS chEcK happens
+
+  //  if (!TagExists(epc_byte_array, sizeof(epc_byte_array)))
+  //  {
+  //    printf("TAG NOT FOUND:\n");
+  //    return TAG_NOT_FOUND;
+  //  }
+  //  vTaskDelay(10 / portTICK_PERIOD_MS);
+  bool ok = Write(epc_byte_array, sizeof(epc_byte_array), data_byte_array, wnum, windex, MEM_USER);
   if (!ok)
   {
     return MEM_WRITE_FAILED;

@@ -8,7 +8,9 @@
 
 #include "api_json.h"
 #include "global_status.h"
+#define KILOBYTE 1024
 
+#define HTTPD_TASK_SCAN_SIZE 15 * KILOBYTE
 static const char *TAG = "HTTP_SERVER";
 
 extern const uint8_t _binary_html_index_html_start[] asm("_binary_index_html_start");
@@ -239,7 +241,7 @@ void start_web_server()
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.max_uri_handlers = 12;
   config.max_resp_headers = 12;
-  config.stack_size = 10 * 1024;
+  config.stack_size = HTTPD_TASK_SCAN_SIZE;
   httpd_handle_t server = NULL;
 
   ESP_LOGI(TAG, "Starting server on port: '%d'", config.server_port);

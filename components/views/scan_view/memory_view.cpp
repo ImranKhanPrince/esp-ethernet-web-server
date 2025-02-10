@@ -126,9 +126,9 @@ char *view_handle_memory_command(const char *data)
     {
       cJSON *epc_item = cJSON_GetObjectItem(command_params, "epc");
       cJSON *data_item = cJSON_GetObjectItem(command_params, "data");
+      cJSON *wnum_item = cJSON_GetObjectItem(command_params, "wnum");
       cJSON *windex_item = cJSON_GetObjectItem(command_params, "windex");
-      cJSON *wsize_item = cJSON_GetObjectItem(command_params, "wsize");
-      if (epc_item == NULL || data_item == NULL || windex_item == NULL || wsize_item == NULL)
+      if (epc_item == NULL || data_item == NULL || windex_item == NULL || wnum_item == NULL)
       {
         cJSON_Delete(command_json);
         return strdup("{\"error\":\"Invalid Parameters\"}\n");
@@ -138,22 +138,28 @@ char *view_handle_memory_command(const char *data)
       strncpy(epc, epc_item->valuestring, EPC_STRING_LENGTH - 1);
       epc[EPC_STRING_LENGTH - 1] = '\0';
       int windex = windex_item->valueint;
-      int wsize = wsize_item->valueint;
+      int wnum = wnum_item->valueint;
 
-      size_t mem_size = sizeof(data_item->valuestring);
-      char mem_data[mem_size];
+      size_t mem_size = strlen(data_item->valuestring);
+      printf("mem size %d\n", mem_size);
+      if ((mem_size) % 4 != 0 || mem_size < 4)
+      {
+        return strdup("{\"error\":\"Invalid Data format.\"}\n");
+      }
+      char mem_data[mem_size + 1]; // plus one for NULL terminator
       strncpy(mem_data, data_item->valuestring, mem_size);
+      mem_data[mem_size] = '\0';
 
-      MEM_WRITE_STAUTUS status = change_user_mem(epc, mem_data, wsize, windex);
+      MEM_WRITE_STAUTUS status = change_user_mem(epc, mem_data, wnum, windex);
       switch (status)
       {
-      case MEM_WRITE_FAILED:
+      case MEM_WRITE_SUCCESSFUL:
         printf("Memory changed successfully\n");
         cJSON_Delete(command_json);
         return strdup("{\"status\":\"success\"}\n");
-      case MEM_WRITE_SUCCESSFUL:
+      case MEM_WRITE_FAILED:
         cJSON_Delete(command_json);
-        return strdup("{\"error\":\"Failed to change EPC\"}\n");
+        return strdup("{\"error\":\"Failed to change USR MEM\"}\n");
       case TAG_NOT_FOUND:
         cJSON_Delete(command_json);
         return strdup("{\"error\":\"Tag not found\"}\n");
