@@ -26,10 +26,9 @@ void rtos_check_uhf_module_task(void *pvParams)
     if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
     {
       printf("LOG: checking uhf module taks\n");
-      // this is the shortest possible command for each  module that's why this is used
-      // char error[50] = "";
-      // TODO: LATER: find out why physical disconnection cases this issue where GetGPI returns 0xFF isnted of -1. same when scans continuously
+      // TODO: LATER: Do a open com port and close com port each time
       char status = GetGPI(0x01);
+      // garbage value from previous command gives FF or baudrate mistake
       if (status == 0x00 || status == 0x01)
       {
         printf("\ngpi: %02X\n", status);

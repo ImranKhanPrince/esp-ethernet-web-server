@@ -18,7 +18,9 @@ static SemaphoreHandle_t data_passed_bin_sem;
 SemaphoreHandle_t mutex_http = NULL;
 QueueHandle_t fifo_queue = NULL;
 EventGroupHandle_t socket_event_group = NULL;
+
 int scan_msg_sock_ = 0;
+static bool message_sender_socket_task_started = false;
 
 // START  STATIC METHOD SIGNATURES
 static void http_client_task(void *pvParameters);
@@ -55,6 +57,10 @@ bool write_to_sock_fifo(const char *message)
 
 void start_msg_sender_task()
 {
+  if (message_sender_socket_task_started)
+  {
+    return;
+  }
   printf("start socket listener task \n");
   if (fifo_queue != NULL)
   {
@@ -158,6 +164,7 @@ static void socket_listener_task(void *pvParameters)
     vTaskDelete(NULL);
     return;
   }
+  message_sender_socket_task_started = true;
   scan_msg_sock_ = sock;
 
   char rx_buffer[128];
@@ -175,6 +182,7 @@ static void socket_listener_task(void *pvParameters)
       ESP_LOGI(TAG, "Socket close signal received");
       scan_msg_sock_ = -1;
       close(sock);
+      message_sender_socket_task_started = false;
       vTaskDelete(NULL);
       break;
     }

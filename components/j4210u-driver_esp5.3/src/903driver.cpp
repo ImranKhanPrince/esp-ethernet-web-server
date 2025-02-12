@@ -1503,6 +1503,7 @@ namespace mu903
         do
         {
             // printf("INPUT:\n");
+            emptyserial();
             bool ok = transfer(command, sizeof(command), response, sizeof(response), 10, 10);
             // printarr(response, 7);
             if (!ok)

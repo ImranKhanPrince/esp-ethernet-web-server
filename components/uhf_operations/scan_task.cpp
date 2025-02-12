@@ -6,22 +6,31 @@
 #include "global_status.h"
 #include "http_message.h"
 #include "driver/gpio.h"
+#include "esp_timer.h"
 
 TaskHandle_t pxCont_scan_task_handle = NULL;
 SemaphoreHandle_t mutex_continuous_scan_busy = NULL;
 SemaphoreHandle_t binsmphr_cont_task_params = NULL;
+SemaphoreHandle_t binsmphr_isr_scan_task = NULL;
+static bool ir_sensor_task_started = false;
 
+#define SCAN_ON_TRIGGER_STACK_SIZE 12 * 1024
+#define CONT_SCAN_STACK_SIZE 12 * 1024
 #define STACK_WARNING_THRESHOLD 512 // bytes
 #define SEND_DATA_AFTER_N_SCAN 3
 
-#define IR_SENSOR_GPIO_PIN 4
+#define TRIG1_GPIO GPIO_NUM_39
+#define TRIG2_GPIO GPIO_NUM_38
+
+#define IR_SENSOR_CONT_SCAN_STATE 0
 #define ESP_INTR_FLAG_DEFAULT 0
 
+// Debounce time in miliscond
+#define DEBOUNCE_TIME_MS 200
 SemaphoreHandle_t xSingleScanSemaphore = NULL;
-
 static const char *TAG = "scan_task";
 // STATIC SIGNATURES
-static void rtos_single_scan_task(void *pvParameters);
+static void scan_on_trigger_task(void *pvParameters);
 
 bool hex_string_to_byte_array(const char *hex_string, unsigned char *byte_array, size_t *array_length)
 {
@@ -119,109 +128,170 @@ std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
   return scanResults;
 }
 
-static void IR_sensor_isr_handler(void *arg)
+static void trig1_isr(void *arg)
 {
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-  // Give semaphore to signal the single scan event
-  xSemaphoreGiveFromISR(xSingleScanSemaphore, &xHigherPriorityTaskWoken);
-
-  if (xHigherPriorityTaskWoken == pdTRUE)
+  static int64_t last_interrupt_time = 0;
+  // DEBOUNCE
+  int64_t current_time = esp_timer_get_time() / 1000;
+  if (current_time - last_interrupt_time > DEBOUNCE_TIME_MS)
   {
-    portYIELD_FROM_ISR();
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    // Give semaphore to signal the single scan event
+    xSemaphoreGiveFromISR(xSingleScanSemaphore, &xHigherPriorityTaskWoken);
+
+    if (xHigherPriorityTaskWoken == pdTRUE)
+    {
+      portYIELD_FROM_ISR();
+    }
+    last_interrupt_time = current_time;
   }
 }
 
-static void single_scan_event_task(void *pvParameters)
+static void trig2_isr(void *arg)
 {
-  for (;;)
+
+  static int64_t last_interrupt_time = 0;
+  // DEBOUNCE
+  int64_t current_time = esp_timer_get_time() / 1000;
+  if (current_time - last_interrupt_time > DEBOUNCE_TIME_MS)
   {
-    // Wait indefinitely for the semaphore from the ISR
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    // Give semaphore to signal the single scan event
+    xSemaphoreGiveFromISR(xSingleScanSemaphore, &xHigherPriorityTaskWoken);
+
+    if (xHigherPriorityTaskWoken == pdTRUE)
+    {
+      portYIELD_FROM_ISR();
+    }
+    last_interrupt_time = current_time;
+  }
+}
+
+static void scan_on_trigger_task(void *pvParameters)
+{
+  bool filter = ((ScanParams *)pvParameters)->filter;
+  int offset = ((ScanParams *)pvParameters)->offset;
+  char *value = ((ScanParams *)pvParameters)->value;
+  free(pvParameters);
+  pvParameters = NULL;
+  xSemaphoreGive(binsmphr_isr_scan_task);
+
+  while (true)
+  {
     if (xSemaphoreTake(xSingleScanSemaphore, portMAX_DELAY) == pdTRUE)
     {
-      // Create a dedicated task for one-shot single scan
-      BaseType_t result = xTaskCreate(rtos_single_scan_task,
-                                      "rtos_single_scan_task",
-                                      4 * 1024,
-                                      NULL,
-                                      10,
-                                      NULL);
-      if (result != pdPASS)
+      // TODO: IMPORTANT: from functionality_status_ take the gpio and then do action of trigger based on that
+
+      gpio_set_direction((gpio_num_t)TRIG1_GPIO, GPIO_MODE_INPUT);
+      while (gpio_get_level((gpio_num_t)TRIG1_GPIO) == IR_SENSOR_CONT_SCAN_STATE)
       {
-        ESP_LOGE(TAG, "Failed to create rtos_single_scan_task");
+        int ir_sensor_level = gpio_get_level((gpio_num_t)TRIG1_GPIO);
+        printf("GPIO LEVEL %d\n", ir_sensor_level);
+        char *scan_json_data;
+        // Perform the single scan.
+        std::vector<ScanResult> ScanResults = single_scan(filter, offset, value);
+
+        // Convert results to a message and send via socket.
+        // (Assume send_scan_results_to_socket is your implementation.)
+        scan_json_data = format_scan_result_arr(ScanResults); // removes duplicate also
+        printf("LOG: cont scan data %s\n", scan_json_data);
+        write_to_sock_fifo(scan_json_data);
+        free(scan_json_data);
+        scan_json_data = NULL;
+        ScanResults.clear();
       }
+      // Customize these parameters depending on your needs.
     }
   }
-}
-
-static void rtos_single_scan_task(void *pvParameters)
-{
-  // Customize these parameters depending on your needs.
-  bool filter = false; // Or true if you need filtering
-  int offset = 0;
-  char value[32] = "DEFAULT_HEX_VALUE"; // Adjust default value as needed
-
-  char *scan_json_data;
-  // Perform the single scan.
-  std::vector<ScanResult> ScanResults = single_scan(filter, offset, value);
-
-  // Convert results to a message and send via socket.
-  // (Assume send_scan_results_to_socket is your implementation.)
-  scan_json_data = format_scan_result_arr(ScanResults); // removes duplicate also
-  printf("LOG: cont scan data %s\n", scan_json_data);
-  write_to_sock_fifo(scan_json_data);
-  free(scan_json_data);
-  scan_json_data = NULL;
-  ScanResults.clear();
-
-  // Delete this task once done.
   vTaskDelete(NULL);
 }
 
-void register_ir_sensor_isr(void)
+bool register_trig1_isr(p_gpio_conf_t pin_detail, bool filter, int offset, char *value)
 {
+  // TODO: IMPORTANT: handle and use filter for this
+  if (ir_sensor_task_started == true || pxCont_scan_task_handle != NULL)
+  {
+    printf("The Scan on trigger task is already running!");
+    return false;
+  }
+
+  printf("LOG: Start ir sensor trigger called\n");
+  scan_info_.scan_mode = SCAN_CONTINUOUS;
+  if (filter == true)
+  {
+    scan_info_.filter = filter;
+    scan_info_.offset = offset;
+    // free(scan_info_.value);
+    strncpy(scan_info_.value, value, sizeof(scan_info_.value) - 1);
+  }
+  else
+  {
+    scan_info_.filter = filter;
+  }
+  nvs_save_scan_mode();
+
+  ScanParams *params = (ScanParams *)pvPortMalloc(sizeof(ScanParams));
+  if (params == NULL)
+  {
+    return false;
+  }
+  params->filter = filter;
+  params->offset = offset;
+  strncpy(params->value, value, sizeof(params->value) - 1);
+  params->value[sizeof(params->value) - 1] = '\0';
+
   // Create the semaphore to signal single scan events.
   xSingleScanSemaphore = xSemaphoreCreateBinary();
   if (xSingleScanSemaphore == NULL)
   {
     ESP_LOGE(TAG, "Failed to create semaphore");
-    return;
+    return false;
   }
 
   // Configure the IR sensor GPIO pin.
   gpio_config_t io_conf = {};
-  io_conf.intr_type = GPIO_INTR_POSEDGE; // Trigger on rising edge
+  io_conf.intr_type = pin_detail.edge; // Trigger on rising edge
   io_conf.mode = GPIO_MODE_INPUT;
-  io_conf.pin_bit_mask = (1ULL << IR_SENSOR_GPIO_PIN);
-  io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-  io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
+  io_conf.pin_bit_mask = (1ULL << pin_detail.pin);
+  io_conf.pull_down_en = pin_detail.pulldown;
+  io_conf.pull_up_en = pin_detail.pullup;
   gpio_config(&io_conf);
 
-  // Install GPIO ISR service.
+  // Install and attach GPIO ISR service.
   gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
-
-  // Attach the IR sensor ISR handler.
-  gpio_isr_handler_add((gpio_num_t)IR_SENSOR_GPIO_PIN, IR_sensor_isr_handler, NULL);
+  gpio_isr_handler_add((gpio_num_t)pin_detail.pin, trig1_isr, NULL);
 
   start_msg_sender_task();
   // Create the event task that waits on the semaphore.
-  BaseType_t task_result = xTaskCreate(single_scan_event_task,
+  binsmphr_isr_scan_task = xSemaphoreCreateBinary();
+
+  BaseType_t task_result = xTaskCreate(scan_on_trigger_task,
                                        "single_scan_event_task",
-                                       4 * 1024,
-                                       NULL,
+                                       SCAN_ON_TRIGGER_STACK_SIZE,
+                                       (void *)params,
                                        10,
-                                       NULL);
+                                       &pxCont_scan_task_handle);
+
+  xSemaphoreTake(binsmphr_isr_scan_task, portMAX_DELAY);
   if (task_result != pdPASS)
   {
     ESP_LOGE(TAG, "Failed to create single_scan_event_task");
+    return false;
   }
   else
   {
+    ir_sensor_task_started = true;
     ESP_LOGI(TAG, "IR sensor ISR registered and event task created");
+    return true;
   }
+  return false;
 }
 
 bool start_cont_scan(bool filter, int offset, char *value)
 {
+  // TODO: IMPORTANT: handle the case wheen scan is running and some one saves the func settings. tell them to stop scan first. also make a new command for restart the scan
   printf("LOG: Start cont scan called\n");
   scan_info_.scan_mode = SCAN_CONTINUOUS;
   if (filter == true)
@@ -253,7 +323,7 @@ bool start_cont_scan(bool filter, int offset, char *value)
     start_msg_sender_task();
     BaseType_t result = xTaskCreate(rtos_cont_scan_task,
                                     "scan_task",
-                                    8 * 1024,
+                                    CONT_SCAN_STACK_SIZE,
                                     (void *)params,
                                     10,
                                     &pxCont_scan_task_handle);
@@ -268,18 +338,28 @@ bool start_cont_scan(bool filter, int offset, char *value)
       printf("Failed to create rtos_cont_scan_task.\n");
     }
   }
-  else if (functionality_status_.trigger == IR_SENSOR)
+  else if (functionality_status_.trigger == TRIG1_INTERRUPT)
   {
     printf("ISR REGISTERED...");
-    register_ir_sensor_isr();
+    p_gpio_conf_t pin_detail = {
+        .pin = TRIG1_GPIO,
+        .edge = GPIO_INTR_POSEDGE,
+        .pullup = GPIO_PULLUP_DISABLE,
+        .pulldown = GPIO_PULLDOWN_DISABLE,
+    };
+
+    register_trig1_isr(pin_detail, filter, offset, value);
     return true;
-    // TODO: IMPORTANT: create a ISR here
   }
-  else if (functionality_status_.trigger == MOTION_SENSOR)
+  else if (functionality_status_.trigger == TRIG2_INTERRUPT)
   {
-    // TODO: IMPORTANT: create a ISR here
+    // TODO: IMPORTANT: create a ISR here exactly similar to IR_SENSOR and just add more condition to the task
   }
-  else if (functionality_status_.trigger == IR_MOTION_SENSOR)
+  else if (functionality_status_.trigger == TRIG1_AND_TRIG2_INTERRUPT)
+  { // WHEN IR AND MOTION both gets triggered
+    //  TODO: IMPORTANT: create a ISR here
+  }
+  else if (functionality_status_.trigger == TRIG1_OR_TRIG2_INTERRUPT)
   { // WHEN IR AND MOTION both gets triggered
     //  TODO: IMPORTANT: create a ISR here
   }
@@ -302,44 +382,44 @@ void rtos_cont_scan_task(void *pvParams)
   ScanParams *params = (ScanParams *)pvParams;
   xSemaphoreGive(binsmphr_cont_task_params); // data copy done releasing binary semaphore
 
-  mutex_continuous_scan_busy = xSemaphoreCreateMutex();
+  // mutex_continuous_scan_busy = xSemaphoreCreateMutex();
   char *scan_json_data;
   std::vector<ScanResult> scanResults;
   int i = 0;
   while (true)
   {
-    if (xSemaphoreTake(mutex_continuous_scan_busy, portMAX_DELAY))
+    // if (xSemaphoreTake(mutex_continuous_scan_busy, portMAX_DELAY))
+    // {
+    static int iteration_count = 0;
+    if (++iteration_count % 10 == 0)
     {
-      static int iteration_count = 0;
-      if (++iteration_count % 10 == 0)
-      {
-        check_stack_watermark(NULL); // NULL gets current task handle
-      }
-      printf("Scanning...\n");
-      scanResults = single_scan(params->filter, params->offset, params->value);
-
-      if (scanResults.size() != 0 &&
-          i % SEND_DATA_AFTER_N_SCAN == 0 &&
-          scan_msg_sock_ > 0)
-      {
-        scan_json_data = format_scan_result_arr(scanResults); // removes duplicate also
-        printf("LOG: cont scan data %s\n", scan_json_data);
-        write_to_sock_fifo(scan_json_data);
-        free(scan_json_data);
-        scan_json_data = NULL;
-        scanResults.clear();
-        printf("LOG: tags found \n");
-      }
-      else
-      {
-        printf("LOG: No tags found or not sending data. \n");
-      }
-      xSemaphoreGive(mutex_continuous_scan_busy);
+      check_stack_watermark(NULL); // NULL gets current task handle
     }
-    int scan_interval_ms = MAX(functionality_status_.scan_interval, 100);
-    vTaskDelay(scan_interval_ms / portTICK_PERIOD_MS);
-    ++i;
+    printf("Scanning...\n");
+    scanResults = single_scan(params->filter, params->offset, params->value);
+
+    if (scanResults.size() != 0 &&
+        i % SEND_DATA_AFTER_N_SCAN == 0 &&
+        scan_msg_sock_ > 0)
+    {
+      scan_json_data = format_scan_result_arr(scanResults); // removes duplicate also
+      printf("LOG: cont scan data %s\n", scan_json_data);
+      write_to_sock_fifo(scan_json_data);
+      free(scan_json_data);
+      scan_json_data = NULL;
+      scanResults.clear();
+      printf("LOG: tags found \n");
+    }
+    else
+    {
+      printf("LOG: No tags found or not sending data. \n");
+    }
+    // xSemaphoreGive(mutex_continuous_scan_busy);
   }
+  int scan_interval_ms = MAX(functionality_status_.scan_interval, 100);
+  vTaskDelay(scan_interval_ms / portTICK_PERIOD_MS);
+  ++i;
+  // }
   vTaskDelete(NULL);
 }
 
@@ -347,9 +427,9 @@ bool stop_cont_scan()
 {
   if (pxCont_scan_task_handle != NULL)
   {
-    xSemaphoreTake(mutex_continuous_scan_busy, portMAX_DELAY);
-    vSemaphoreDelete(mutex_continuous_scan_busy);
-    mutex_continuous_scan_busy = NULL;
+    // xSemaphoreTake(mutex_continuous_scan_busy, portMAX_DELAY);
+    // vSemaphoreDelete(mutex_continuous_scan_busy);
+    // mutex_continuous_scan_busy = NULL;
     stop_socket_msg_task(); // asyncronously turns off the socket msg task
     scan_info_.scan_mode = SCAN_OFF;
     scan_info_.filter = false;

@@ -26,6 +26,7 @@
 #include "settings.h"
 #include "scan_task.h"
 
+#define UHF_MODULE_CHECK_TASK_SIZE 4 * 1024
 // TODO: this will come from CMAKELIST define;
 #ifdef CMAKE_SERIAL_NO
 #define SERIAL_NO CMAKE_SERIAL_NO
@@ -231,7 +232,7 @@ extern "C" void app_main(void)
         xSemaphoreGive(xUhfUartMutex);
     }
 
-    xTaskCreate(rtos_check_uhf_module_task, "check uhf module task", 2 * 1024, NULL, 1, NULL);
+    xTaskCreate(rtos_check_uhf_module_task, "check uhf module task", UHF_MODULE_CHECK_TASK_SIZE, NULL, 1, NULL);
     // int n = Inventory(false);
     // printf("n=%d\n", n);
 

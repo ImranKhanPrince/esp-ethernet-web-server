@@ -5,5 +5,5 @@ set(SOURCES "scan_task.cpp"
 
 idf_component_register(SRCS ${SOURCES}
                         INCLUDE_DIRS "." "include"
-                        REQUIRES j4210u-driver_esp5.3 settings_model global_status json messaging driver
+                        REQUIRES j4210u-driver_esp5.3 settings_model global_status json messaging driver esp_timer
 )

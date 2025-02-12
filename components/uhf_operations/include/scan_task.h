@@ -9,6 +9,7 @@
 #include "freertos/semphr.h"
 
 #include "driver.h"
+#include "driver/gpio.h"
 
 struct ScanParams
 {
@@ -17,8 +18,17 @@ struct ScanParams
   char value[24]; // Size matches maskdata array
 };
 
+typedef struct
+{
+  gpio_num_t pin;
+  gpio_int_type_t edge;
+  gpio_pullup_t pullup;
+  gpio_pulldown_t pulldown;
+} p_gpio_conf_t;
+
 // cpp extern
-extern std::vector<ScanResult> single_scan(bool filter, int offset, char *value);
+extern std::vector<ScanResult>
+single_scan(bool filter, int offset, char *value);
 // helper
 extern char *format_scan_result_arr(std::vector<ScanResult> scanResults);
 

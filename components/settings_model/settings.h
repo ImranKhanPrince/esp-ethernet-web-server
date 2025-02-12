@@ -11,9 +11,10 @@
 typedef enum
 {
   NO_TRIGGER,
-  IR_SENSOR,
-  MOTION_SENSOR,
-  IR_MOTION_SENSOR
+  TRIG1_INTERRUPT,
+  TRIG2_INTERRUPT,
+  TRIG1_AND_TRIG2_INTERRUPT,
+  TRIG1_OR_TRIG2_INTERRUPT
 } TRIGGER;
 // TODO: LATER: Timed trigger or timed continuous scan from 8AM to 5pm such and such from json array of struct to store the periods
 

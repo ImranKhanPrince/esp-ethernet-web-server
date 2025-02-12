@@ -269,15 +269,33 @@ char *set_func_settings(const char *data)
   }
 
   cJSON *trigger = cJSON_GetObjectItem(data_obj, "trigger");
-  if (cJSON_IsNumber(trigger))
-  {
-    device_function_stat.trigger = trigger->valueint;
-  }
-  else
+
+  if (trigger == NULL)
   {
     cJSON_Delete(root_object);
     return "{\"error\":\"Invalid trigger format\"}\n";
   }
+  if (strcmp(trigger->valuestring, "NONE") == 0)
+  {
+    device_function_stat.trigger = NO_TRIGGER;
+  }
+  else if (strcmp(trigger->valuestring, "TRIG1") == 0)
+  {
+    device_function_stat.trigger = TRIG1_INTERRUPT;
+  }
+  else if (strcmp(trigger->valuestring, "TRIG2") == 0)
+  {
+    device_function_stat.trigger = TRIG2_INTERRUPT;
+  }
+  else if (strcmp(trigger->valuestring, "TRIG1_OR_TRIG2_INTERRUPT") == 0)
+  {
+    device_function_stat.trigger = TRIG1_OR_TRIG2_INTERRUPT;
+  }
+  else if (strcmp(trigger->valuestring, "TRIG1_AND_TRIG2_INTERRUPT") == 0)
+  {
+    device_function_stat.trigger = TRIG1_AND_TRIG2_INTERRUPT;
+  }
+
   cJSON *auth_key = cJSON_GetObjectItem(data_obj, "auth_key");
   if (auth_key == NULL)
   {
