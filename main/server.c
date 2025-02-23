@@ -201,7 +201,7 @@ esp_err_t handle_post_scan(httpd_req_t *req)
   }
   // PASSING THE CONTROL TO VIEW
   char *response = handle_scan_command(data);
-  printf("DEBUG: got out of the scan command\n");
+  LOGI("", "DEBUG: got out of the scan command\n");
 
   httpd_resp_send(req, response, strlen(response));
 

@@ -46,7 +46,7 @@ char *get_tid_memory(char *epc_num)
   result = byte_array_to_hexstr(tid_byte_array, sizeof(epc_byte_array), tid_hex_string, sizeof(tid_hex_string));
   if (result == 0)
   {
-    printf("Hex String : %s\n", tid_hex_string);
+    LOGI("", "Hex String : %s\n", tid_hex_string);
   }
   else
   {
@@ -82,7 +82,7 @@ char *get_usr_memory(char *epc_num, int wnum, int windex)
   }
   char data_str[wnum * WORD_TO_BYTE * BYTE_TO_STR + 1];
   byte_array_to_hexstr(data, sizeof(data), data_str, sizeof(data_str));
-  printf("DATA:%s\n", data_str);
+  LOGI("", "DATA:%s\n", data_str);
   char buf[sizeof(data_str) + 20];
   sprintf(buf, "{\"user_memory\":\"%s\"}", data_str);
   return strdup(buf);
@@ -118,13 +118,13 @@ MEM_WRITE_STAUTUS change_user_mem(char *epc_num, char *data, int wnum, int winde
   hexstr_to_byte_array(data, data_byte_array, sizeof(data_byte_array));
 
   print_byte_array(epc_byte_array, sizeof(epc_byte_array));
-  printf("USR DATA\n");
+  LOGI("", "USR DATA\n");
   print_byte_array(data_byte_array, sizeof(data_byte_array));
   // WRITING FAILS IF THIS chEcK happens
 
   //  if (!TagExists(epc_byte_array, sizeof(epc_byte_array)))
   //  {
-  //    printf("TAG NOT FOUND:\n");
+  //    LOGI("","TAG NOT FOUND:\n");
   //    return TAG_NOT_FOUND;
   //  }
   //  vTaskDelay(10 / portTICK_PERIOD_MS);

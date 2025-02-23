@@ -4,6 +4,7 @@
 
 #include "common.h"
 #include "helper_func.h"
+#include "global_status.h"
 
 // ===============STATIC SIGNATURES=======================
 static std::string tohex(const std::string &uid);
@@ -26,7 +27,7 @@ static char *handle_single_scan(bool filter, int offset, char *value);
 char *handle_scan_command(const char *data)
 
 {
-  printf("LOG: handle_scan_command called\n");
+  LOGI("", "LOG: handle_scan_command called\n");
   if (data == NULL)
   {
     return strdup("{\"error\":\"Invalid JSON FORMAT\"}\n");
@@ -92,15 +93,15 @@ char *handle_scan_command(const char *data)
   if (scan_mode == SCAN_ONCE)
   {
 
-    printf("LOG: Handling single scan with filter=%d, offset=%d, data=%s\n",
-           filter, offset, data);
+    LOGI("", "LOG: Handling single scan with filter=%d, offset=%d, data=%s\n",
+         filter, offset, data);
 
     const char *scan_response = handle_single_scan(filter, offset, value);
     if (scan_response == NULL)
     {
       return strdup("{\"error\":\"Failed to handle scan\"}\n");
     }
-    printf("LOG: response: %s\n", scan_response);
+    LOGI("", "LOG: response: %s\n", scan_response);
     response = strdup(scan_response);
     if (response == NULL)
     {
@@ -109,8 +110,8 @@ char *handle_scan_command(const char *data)
   }
   else if (scan_mode == SCAN_CONTINUOUS)
   {
-    printf("LOG: Handling single scan with filter=%d, offset=%d, data=%s\n",
-           filter, offset, value);
+    LOGI("", "LOG: Handling single scan with filter=%d, offset=%d, data=%s\n",
+         filter, offset, value);
     const char *response_json = handle_start_cont_scan(filter, offset, value);
     response = strdup(response_json);
   }

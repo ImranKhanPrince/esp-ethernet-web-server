@@ -4,4 +4,3 @@ idf_component_register(SRCS "app_main.cpp" "server.c"
                                    "html/assets/styles/style.css"
                                    "html/assets/scripts/app.js"
                                    "html/assets/images/favicon.ico")
-

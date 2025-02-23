@@ -7,6 +7,45 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
+#include "esp_log.h"
+
+#define LOG 1
+#ifdef LOG
+#define LOGI(tag, fmt, ...)                                                \
+  do                                                                       \
+  {                                                                        \
+    const char *log_tag = (tag != NULL && tag[0] != '\0') ? tag : "Info:"; \
+    ESP_LOGI(log_tag, fmt, ##__VA_ARGS__);                                 \
+  } while (0)
+
+#define LOGE(tag, fmt, ...)                                                     \
+  do                                                                            \
+  {                                                                             \
+    const char *log_tag = (tag != NULL && tag[0] != '\0') ? tag : "Error LOG:"; \
+    ESP_LOGI(log_tag, fmt, ##__VA_ARGS__);                                      \
+  } while (0)
+
+#define LOGW(tag, fmt, ...)                                                       \
+  do                                                                              \
+  {                                                                               \
+    const char *log_tag = (tag != NULL && tag[0] != '\0') ? tag : "Warning LOG:"; \
+    ESP_LOGI(log_tag, fmt, ##__VA_ARGS__);                                        \
+  } while (0)
+
+#define LOGD(tag, fmt, ...)                                                     \
+  do                                                                            \
+  {                                                                             \
+    const char *log_tag = (tag != NULL && tag[0] != '\0') ? tag : "Debug LOG:"; \
+    ESP_LOGV(log_tag, fmt, ##__VA_ARGS__);                                      \
+  } while (0)
+
+#define LOGV(tag, fmt, ...)                                                       \
+  do                                                                              \
+  {                                                                               \
+    const char *log_tag = (tag != NULL && tag[0] != '\0') ? tag : "Verbose LOG:"; \
+    ESP_LOGI(log_tag, fmt, ##__VA_ARGS__);                                        \
+  } while (0)
+#endif
 
 typedef enum
 {

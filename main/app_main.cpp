@@ -99,7 +99,7 @@ static void got_ip_event_handler(void *arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "ETHGW:" IPSTR, IP2STR(&ip_info->gw));
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
-    printf("Starting web server...\n");
+    LOGI("", "Starting web server...\n");
     start_web_server(); // For the api endpoints
     if (scan_info_.scan_mode == SCAN_CONTINUOUS)
     {
@@ -111,7 +111,7 @@ static void got_ip_event_handler(void *arg, esp_event_base_t event_base,
 static void lost_ip_event_handler(void *arg, esp_event_base_t event_base,
                                   int32_t event_id, void *event_data)
 {
-    printf("IP LOST CHECK CONNECTION\n");
+    LOGI("", "IP LOST CHECK CONNECTION\n");
     if (scan_info_.scan_mode == SCAN_CONTINUOUS)
     {
         net_down_handler();
@@ -122,7 +122,7 @@ extern "C" void app_main(void)
 {
 
     uint32_t restart_counter = load_increment_store_restart_counter_till_last_flash();
-    printf("restart_counter: %ld\n", restart_counter);
+    LOGI("", "restart_counter: %ld\n", restart_counter);
     if (restart_counter <= 1)
     {
         strcpy(credentials_.current_pass, credentials_.default_pass);
@@ -210,7 +210,7 @@ extern "C" void app_main(void)
 
         if (connected)
         {
-            printf("Successfully connected with 57600 baud\n");
+            LOGI("", "Successfully connected with 57600 baud\n");
             set_uhf_status(UHF_CONNECTED);
         }
         else
@@ -220,12 +220,12 @@ extern "C" void app_main(void)
             if (!connected)
             {
                 CloseComPort();
-                printf("Failed to open com port!\n");
+                LOGI("", "Failed to open com port!\n");
                 set_uhf_status(UHF_DISCONNECTED);
             }
             else
             {
-                printf("Successfuly connected with 115200 baud\n");
+                LOGI("", "Successfuly connected with 115200 baud\n");
                 set_uhf_status(UHF_CONNECTED);
             }
         }
@@ -234,7 +234,7 @@ extern "C" void app_main(void)
 
     xTaskCreate(rtos_check_uhf_module_task, "check uhf module task", UHF_MODULE_CHECK_TASK_SIZE, NULL, 1, NULL);
     // int n = Inventory(false);
-    // printf("n=%d\n", n);
+    // LOGI("","n=%d\n", n);
 
     print_device_func_settings(&functionality_status_);
 

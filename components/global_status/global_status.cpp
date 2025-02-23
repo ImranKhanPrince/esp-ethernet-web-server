@@ -25,20 +25,20 @@ void rtos_check_uhf_module_task(void *pvParams)
   {
     if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
     {
-      printf("LOG: checking uhf module taks\n");
+      LOGI("", "LOG: checking uhf module taks\n");
       // TODO: LATER: Do a open com port and close com port each time
       char status = GetGPI(0x01);
       // garbage value from previous command gives FF or baudrate mistake
       if (status == 0x00 || status == 0x01)
       {
-        printf("\ngpi: %02X\n", status);
-        printf("LOG: UHF connected\n");
+        LOGI("", "\ngpi: %02X\n", status);
+        LOGI("", "LOG: UHF connected\n");
         set_uhf_status(UHF_CONNECTED);
       }
       else
       {
-        printf("\ngpi: %02X\n", status); // ff means -1 uint to int conversion
-        printf("LOG: UHF disconnected\n");
+        LOGI("", "\ngpi: %02X\n", status); // ff means -1 uint to int conversion
+        LOGI("", "LOG: UHF disconnected\n");
         // TODO: MAYBE: make the gui to output a message
         set_uhf_status(UHF_DISCONNECTED);
       }

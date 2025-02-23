@@ -1,6 +1,8 @@
 #include "api_json.h"
 #include "tag_memory_ops.h"
 #include "settings.h"
+#include "global_status.h"
+
 // MEMORY OPERATIONS REQUIES SCAN TO happen thats why in scan view
 #define EPC_STRING_LENGTH 24 + 1
 
@@ -102,7 +104,7 @@ char *view_handle_memory_command(const char *data)
       new_epc[EPC_STRING_LENGTH - 1] = '\0'; // Ensure null-termination
       if (strlen(epc_item->valuestring) != 24 || strlen(new_epc_item->valuestring) != 24)
       {
-        printf("Sizeof epc = %d\n", strlen(epc_item->valuestring));
+        LOGI("", "Sizeof epc = %d\n", strlen(epc_item->valuestring));
         cJSON_Delete(command_json);
         return strdup("{\"error\":\"Invalid EPC Format\"}\n");
       }
@@ -110,7 +112,7 @@ char *view_handle_memory_command(const char *data)
       switch (status)
       {
       case MEM_WRITE_FAILED:
-        printf("EPC changed successfully\n");
+        LOGI("", "EPC changed successfully\n");
         cJSON_Delete(command_json);
         return strdup("{\"status\":\"success\"}\n");
       case MEM_WRITE_SUCCESSFUL:
@@ -141,7 +143,7 @@ char *view_handle_memory_command(const char *data)
       int wnum = wnum_item->valueint;
 
       size_t mem_size = strlen(data_item->valuestring);
-      printf("mem size %d\n", mem_size);
+      LOGI("", "mem size %d\n", mem_size);
       if ((mem_size) % 4 != 0 || mem_size < 4)
       {
         return strdup("{\"error\":\"Invalid Data format.\"}\n");
@@ -154,7 +156,7 @@ char *view_handle_memory_command(const char *data)
       switch (status)
       {
       case MEM_WRITE_SUCCESSFUL:
-        printf("Memory changed successfully\n");
+        LOGI("", "Memory changed successfully\n");
         cJSON_Delete(command_json);
         return strdup("{\"status\":\"success\"}\n");
       case MEM_WRITE_FAILED:
@@ -164,7 +166,7 @@ char *view_handle_memory_command(const char *data)
         cJSON_Delete(command_json);
         return strdup("{\"error\":\"Tag not found\"}\n");
       default:
-        printf("Unknown Error\n");
+        LOGI("", "Unknown Error\n");
       }
     }
     else
@@ -176,7 +178,7 @@ char *view_handle_memory_command(const char *data)
     return strdup("{\"error\":\"Invalid Command\"}\n");
   }
 
-  printf("command: %s\n", command_name);
+  LOGI("", "command: %s\n", command_name);
   cJSON_Delete(command_json);
   return strdup("{\"error\":\"Invalid Command\"}\n");
 }

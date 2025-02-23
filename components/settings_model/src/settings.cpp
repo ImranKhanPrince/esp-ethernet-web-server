@@ -132,6 +132,6 @@ SET_DEVICE_SETTING_STATUS set_device_func_settings(const device_func_status_t *s
     return SET_DEVICE_SETTINGS_FAIL;
   }
 
-  printf("LOG: model called\n");
+  LOGI("", "LOG: model called\n");
   return SET_DEVICE_SETTINGS_SUCCESS;
 }

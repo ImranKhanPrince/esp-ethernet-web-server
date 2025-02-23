@@ -66,7 +66,7 @@ bool hex_string_to_byte_array(const char *hex_string, unsigned char *byte_array,
 
 std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
 {
-  printf("LOG: single_scan called\n");
+  LOGI("", "LOG: single_scan called\n");
   std::vector<ScanResult> scanResults;
   ScanResult sd;
   if (xSemaphoreTake(xUhfUartMutex, portMAX_DELAY) == pdTRUE)
@@ -77,7 +77,7 @@ std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
       size_t maskdata_length = 0;
       if (!hex_string_to_byte_array(value, maskdata, &maskdata_length))
       {
-        printf("LOG: Failed to convert hex string\n");
+        LOGI("", "LOG: Failed to convert hex string\n");
         xSemaphoreGive(xUhfUartMutex);
         return scanResults;
         // TODO: BUG: has a bug when given full EPC request doesn't respond. maybe due to epc size and null terminator
@@ -85,7 +85,7 @@ std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
 
       SetFilter(offset, maskdata_length, maskdata);
       int n = Inventory(true);
-      printf("LOG: TAGS FOUND: %d\n", n);
+      LOGI("", "LOG: TAGS FOUND: %d\n", n);
 
       if (n == 0)
       {
@@ -106,7 +106,7 @@ std::vector<ScanResult> single_scan(bool filter, int offset, char *value)
     else
     {
       int n = Inventory(false);
-      printf("LOG: TAGS FOUND: %d\n", n);
+      LOGI("", "LOG: TAGS FOUND: %d\n", n);
 
       if (n == 0)
       {
@@ -188,7 +188,7 @@ static void scan_on_trigger_task(void *pvParameters)
       while (gpio_get_level((gpio_num_t)TRIG1_GPIO) == IR_SENSOR_CONT_SCAN_STATE)
       {
         int ir_sensor_level = gpio_get_level((gpio_num_t)TRIG1_GPIO);
-        printf("GPIO LEVEL %d\n", ir_sensor_level);
+        LOGI("", "GPIO LEVEL %d\n", ir_sensor_level);
         char *scan_json_data;
         // Perform the single scan.
         std::vector<ScanResult> ScanResults = single_scan(filter, offset, value);
@@ -196,7 +196,7 @@ static void scan_on_trigger_task(void *pvParameters)
         // Convert results to a message and send via socket.
         // (Assume send_scan_results_to_socket is your implementation.)
         scan_json_data = format_scan_result_arr(ScanResults); // removes duplicate also
-        printf("LOG: cont scan data %s\n", scan_json_data);
+        LOGI("", "LOG: cont scan data %s\n", scan_json_data);
         write_to_sock_fifo(scan_json_data);
         free(scan_json_data);
         scan_json_data = NULL;
@@ -213,11 +213,11 @@ bool register_trig1_isr(p_gpio_conf_t pin_detail, bool filter, int offset, char 
   // TODO: IMPORTANT: handle and use filter for this
   if (ir_sensor_task_started == true || pxCont_scan_task_handle != NULL)
   {
-    printf("The Scan on trigger task is already running!");
+    LOGI("", "The Scan on trigger task is already running!");
     return false;
   }
 
-  printf("LOG: Start ir sensor trigger called\n");
+  LOGI("", "LOG: Start ir sensor trigger called\n");
   scan_info_.scan_mode = SCAN_CONTINUOUS;
   if (filter == true)
   {
@@ -292,7 +292,7 @@ bool register_trig1_isr(p_gpio_conf_t pin_detail, bool filter, int offset, char 
 bool start_cont_scan(bool filter, int offset, char *value)
 {
   // TODO: IMPORTANT: handle the case wheen scan is running and some one saves the func settings. tell them to stop scan first. also make a new command for restart the scan
-  printf("LOG: Start cont scan called\n");
+  LOGI("", "LOG: Start cont scan called\n");
   scan_info_.scan_mode = SCAN_CONTINUOUS;
   if (filter == true)
   {
@@ -335,12 +335,12 @@ bool start_cont_scan(bool filter, int offset, char *value)
     }
     else
     {
-      printf("Failed to create rtos_cont_scan_task.\n");
+      LOGI("", "Failed to create rtos_cont_scan_task.\n");
     }
   }
   else if (functionality_status_.trigger == TRIG1_INTERRUPT)
   {
-    printf("ISR REGISTERED...");
+    LOGI("", "ISR REGISTERED...");
     p_gpio_conf_t pin_detail = {
         .pin = TRIG1_GPIO,
         .edge = GPIO_INTR_POSEDGE,
@@ -395,7 +395,7 @@ void rtos_cont_scan_task(void *pvParams)
     {
       check_stack_watermark(NULL); // NULL gets current task handle
     }
-    printf("Scanning...\n");
+    LOGI("", "Scanning...\n");
     scanResults = single_scan(params->filter, params->offset, params->value);
 
     if (scanResults.size() != 0 &&
@@ -403,16 +403,16 @@ void rtos_cont_scan_task(void *pvParams)
         scan_msg_sock_ > 0)
     {
       scan_json_data = format_scan_result_arr(scanResults); // removes duplicate also
-      printf("LOG: cont scan data %s\n", scan_json_data);
+      LOGI("", "LOG: cont scan data %s\n", scan_json_data);
       write_to_sock_fifo(scan_json_data);
       free(scan_json_data);
       scan_json_data = NULL;
       scanResults.clear();
-      printf("LOG: tags found \n");
+      LOGI("", "LOG: tags found \n");
     }
     else
     {
-      printf("LOG: No tags found or not sending data. \n");
+      LOGI("", "LOG: No tags found or not sending data. \n");
     }
     // xSemaphoreGive(mutex_continuous_scan_busy);
   }

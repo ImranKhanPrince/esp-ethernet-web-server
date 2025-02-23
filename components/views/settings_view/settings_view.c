@@ -1,6 +1,7 @@
 #include "api_json.h"
 
 #include "settings.h"
+#include "global_status.h"
 
 char *get_settings()
 {
@@ -92,12 +93,12 @@ char *settings_to_json(const rfm_settings_saveable_t *settings)
 */
 char *set_settings(const char *data)
 {
-  printf("LOG: Data: %s\n", data);
+  LOGI("", "LOG: Data: %s\n", data);
   cJSON *root = cJSON_Parse(data);
 
   if (root == NULL)
   {
-    printf("LOG: Invalid JSON FORMAT\n");
+    LOGI("", "LOG: Invalid JSON FORMAT\n");
     return NULL;
   }
   cJSON *auth_key = cJSON_GetObjectItem(root, "auth_key");
@@ -115,7 +116,7 @@ char *set_settings(const char *data)
   }
 
   char *data_json = cJSON_Print(root);
-  printf("LOG: Data_json: %s\n", data_json);
+  LOGI("", "LOG: Data_json: %s\n", data_json);
 
   // Extract the "data" object from the input JSON
   cJSON *data_object = cJSON_GetObjectItem(root, "data");
@@ -234,7 +235,7 @@ char *set_func_settings(const char *data)
   if (strcmp(password->valuestring, credentials_.current_pass) != 0)
   {
     cJSON_Delete(root_object);
-    printf("LOG: Invalid Password\n");
+    LOGI("", "LOG: Invalid Password\n");
     return "{\"error\":\"Invalid password\"}\n";
   }
   //----- END Password Verification
@@ -320,6 +321,6 @@ char *set_func_settings(const char *data)
   cJSON_Delete(root_object);
   set_device_func_settings(&device_function_stat); // call to model
 
-  printf("LOG: Data: %s\n", data);
+  LOGI("", "LOG: Data: %s\n", data);
   return "{\"success\":\"Settings set successfully.\"}\n";
 }

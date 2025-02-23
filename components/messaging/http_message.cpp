@@ -8,6 +8,7 @@
 #include "lwip/sockets.h"
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
+#include "global_status.h"
 
 #define SOCKET_TIMEOUT_MS 1000
 
@@ -61,10 +62,10 @@ void start_msg_sender_task()
   {
     return;
   }
-  printf("start socket listener task \n");
+  LOGI("", "start socket listener task \n");
   if (fifo_queue != NULL)
   {
-    printf("Continuous Scan Socket task Already running.\n");
+    LOGI("", "Continuous Scan Socket task Already running.\n");
     return;
   }
 
@@ -156,8 +157,76 @@ int create_socket_connection(const char *host, uint16_t port)
 
 static void socket_listener_task(void *pvParameters)
 {
-  printf("socket listener task\n");
-  int sock = create_socket_connection(SOCKET_SERVER_IP, PORT);
+  char *data_output_loc = functionality_status_.data_output_loc;
+  char host[64];
+  int port = 0;
+
+  if (data_output_loc == NULL || data_output_loc[0] == '\0')
+  {
+    ESP_LOGE(TAG, "Data output location is not set. Closing socket task.");
+    message_sender_socket_task_started = false;
+    vTaskDelete(NULL);
+    return;
+  }
+
+  // Make a copy of data_output_loc because strtok modifies the string
+  char *data_output_loc_copy = strdup(data_output_loc);
+  if (data_output_loc_copy == NULL)
+  {
+    ESP_LOGE(TAG, "Failed to duplicate data_output_loc");
+    message_sender_socket_task_started = false;
+    vTaskDelete(NULL);
+    return;
+  }
+
+  // Parse the data_output_loc
+  char *protocol = strtok(data_output_loc_copy, "//"); // Remove "http://"
+  if (protocol == NULL)
+  {
+    ESP_LOGE(TAG, "Invalid data output location format. Closing socket task.");
+    message_sender_socket_task_started = false;
+    free(data_output_loc_copy);
+    vTaskDelete(NULL);
+    return;
+  }
+
+  char *address_and_port = strtok(NULL, "/"); // Get IP address and port
+  if (address_and_port == NULL)
+  {
+    ESP_LOGE(TAG, "Invalid data output location format. Closing socket task.");
+    message_sender_socket_task_started = false;
+    free(data_output_loc_copy);
+    vTaskDelete(NULL);
+    return;
+  }
+
+  char *address = strtok(address_and_port, ":"); // Get IP address
+  if (address == NULL)
+  {
+    ESP_LOGE(TAG, "Invalid data output location format. Closing socket task.");
+    message_sender_socket_task_started = false;
+    free(data_output_loc_copy);
+    vTaskDelete(NULL);
+    return;
+  }
+  strcpy(host, address);
+
+  char *port_str = strtok(NULL, "/"); // Get port
+  if (port_str == NULL)
+  {
+    ESP_LOGE(TAG, "Invalid data output location format. Closing socket task.");
+    message_sender_socket_task_started = false;
+    free(data_output_loc_copy);
+    vTaskDelete(NULL);
+    return;
+  }
+
+  port = atoi(port_str); // Convert port to integer
+
+  LOGI("", "socket listener task\n");
+  LOGI("http_message", "Trying to send in %s:%d", host, port);
+
+  int sock = create_socket_connection(host, port);
   if (sock < 0)
   {
     ESP_LOGE(TAG, "Failed to create socket connection");

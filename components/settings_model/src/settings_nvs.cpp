@@ -1,5 +1,6 @@
 #include "settings.h"
 #include "string.h"
+#include "global_status.h"
 
 nvs_handle_t func_settings_handle = NULL;
 
@@ -29,7 +30,7 @@ void store_serial_number_and_default_password(const char *serial_number, const c
   err = nvs_flash_init();
   if (err != ESP_OK)
   {
-    printf("Error initializing NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Error initializing NVS: %s\n", esp_err_to_name(err));
     return;
   }
 
@@ -37,7 +38,7 @@ void store_serial_number_and_default_password(const char *serial_number, const c
   err = nvs_open("default_pass", NVS_READWRITE, &nvs_handle);
   if (err != ESP_OK)
   {
-    printf("Error opening NVS handle: %s\n", esp_err_to_name(err));
+    LOGI("", "Error opening NVS handle: %s\n", esp_err_to_name(err));
     return;
   }
 
@@ -45,7 +46,7 @@ void store_serial_number_and_default_password(const char *serial_number, const c
   err = nvs_set_str(nvs_handle, "serial_number", serial_number);
   if (err != ESP_OK)
   {
-    printf("Error writing serial number: %s\n", esp_err_to_name(err));
+    LOGI("", "Error writing serial number: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return;
   }
@@ -54,7 +55,7 @@ void store_serial_number_and_default_password(const char *serial_number, const c
   err = nvs_set_str(nvs_handle, "cur_password", cur_password);
   if (err != ESP_OK)
   {
-    printf("Error writing current password: %s\n", esp_err_to_name(err));
+    LOGI("", "Error writing current password: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return;
   }
@@ -63,7 +64,7 @@ void store_serial_number_and_default_password(const char *serial_number, const c
   err = nvs_set_str(nvs_handle, "def_password", def_password);
   if (err != ESP_OK)
   {
-    printf("Error writing default password: %s\n", esp_err_to_name(err));
+    LOGI("", "Error writing default password: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return;
   }
@@ -72,7 +73,7 @@ void store_serial_number_and_default_password(const char *serial_number, const c
   err = nvs_commit(nvs_handle);
   if (err != ESP_OK)
   {
-    printf("Error committing NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Error committing NVS: %s\n", esp_err_to_name(err));
   }
 
   // Close NVS handle
@@ -90,7 +91,7 @@ bool load_serial_number_and_default_password(char *serial_number, size_t serial_
   err = nvs_flash_init();
   if (err != ESP_OK)
   {
-    printf("Error initializing NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Error initializing NVS: %s\n", esp_err_to_name(err));
     return false;
   }
 
@@ -98,7 +99,7 @@ bool load_serial_number_and_default_password(char *serial_number, size_t serial_
   err = nvs_open("default_pass", NVS_READONLY, &nvs_handle);
   if (err != ESP_OK)
   {
-    printf("Error opening NVS handle: %s\n", esp_err_to_name(err));
+    LOGI("", "Error opening NVS handle: %s\n", esp_err_to_name(err));
     return false;
   }
 
@@ -107,7 +108,7 @@ bool load_serial_number_and_default_password(char *serial_number, size_t serial_
   err = nvs_get_str(nvs_handle, "serial_number", serial_number, &required_size);
   if (err != ESP_OK)
   {
-    printf("Error reading serial number: %s\n", esp_err_to_name(err));
+    LOGI("", "Error reading serial number: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return false;
   }
@@ -117,7 +118,7 @@ bool load_serial_number_and_default_password(char *serial_number, size_t serial_
   err = nvs_get_str(nvs_handle, "cur_password", cur_password, &required_size);
   if (err != ESP_OK)
   {
-    printf("Error reading current password: %s\n", esp_err_to_name(err));
+    LOGI("", "Error reading current password: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return false;
   }
@@ -127,7 +128,7 @@ bool load_serial_number_and_default_password(char *serial_number, size_t serial_
   err = nvs_get_str(nvs_handle, "def_password", def_password, &required_size);
   if (err != ESP_OK)
   {
-    printf("Error reading default password: %s\n", esp_err_to_name(err));
+    LOGI("", "Error reading default password: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return false;
   }
@@ -143,12 +144,12 @@ bool get_nvs_func_settings(device_func_status_t *func_settings)
   esp_err_t err = nvs_open("func-setting", NVS_READONLY, &func_settings_handle);
   if (err != ESP_OK)
   {
-    printf("Error (%s) opening func_settings NVS handle!\n", esp_err_to_name(err));
+    LOGI("", "Error (%s) opening func_settings NVS handle!\n", esp_err_to_name(err));
     return false;
   }
   else
   {
-    printf("Opened Nvs for READ\n");
+    LOGI("", "Opened Nvs for READ\n");
   }
 
   // READ func_settings->data_output_loc
@@ -156,7 +157,7 @@ bool get_nvs_func_settings(device_func_status_t *func_settings)
   esp_err_t ret = nvs_get_str(func_settings_handle, "msg-link", NULL, &required_size);
   if (ret != ESP_OK)
   {
-    printf("Error getting size: %s\n", esp_err_to_name(ret));
+    LOGI("", "Error getting size: %s\n", esp_err_to_name(ret));
     ret_code = false;
   }
   else
@@ -166,7 +167,7 @@ bool get_nvs_func_settings(device_func_status_t *func_settings)
     free(func_settings->data_output_loc);
     func_settings->data_output_loc = NULL;
     func_settings->data_output_loc = strdup(str_value);
-    printf("got the nvs value..\n");
+    LOGI("", "got the nvs value..\n");
     free(str_value);
     str_value = NULL;
   }
@@ -176,7 +177,7 @@ bool get_nvs_func_settings(device_func_status_t *func_settings)
   ret = nvs_get_u16(func_settings_handle, "scn-interval", &scan_interval);
   if (ret != ESP_OK)
   {
-    printf("Failed to read scan_interval from nvs: %s\n", esp_err_to_name(err));
+    LOGI("", "Failed to read scan_interval from nvs: %s\n", esp_err_to_name(err));
     ret_code = false;
   }
   else
@@ -189,7 +190,7 @@ bool get_nvs_func_settings(device_func_status_t *func_settings)
   ret = nvs_get_u8(func_settings_handle, "trigger", &trigger);
   if (ret != ESP_OK || trigger == 99)
   {
-    printf("Failed to read scan trigger from nvs: %s\n", esp_err_to_name(ret));
+    LOGI("", "Failed to read scan trigger from nvs: %s\n", esp_err_to_name(ret));
     ret_code = false;
   }
   else
@@ -202,7 +203,7 @@ bool get_nvs_func_settings(device_func_status_t *func_settings)
   nvs_get_str(func_settings_handle, "auth_key", functionality_status_.auth_key, &auth_key_size);
   if (ret != ESP_OK || auth_key_size <= 0)
   {
-    printf("failed to read auth_key form nvs:");
+    LOGI("", "failed to read auth_key form nvs:");
     ret_code = false;
   }
 
@@ -218,19 +219,19 @@ bool set_nvs_func_settings(device_func_status_t *func_settings)
   esp_err_t err = nvs_open("func-setting", NVS_READWRITE, &func_settings_handle);
   if (err != ESP_OK)
   {
-    printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
+    LOGI("", "Error (%s) opening NVS handle!\n", esp_err_to_name(err));
     return false;
   }
   else
   {
-    printf("Opened NVS for write\n");
+    LOGI("", "Opened NVS for write\n");
   }
 
   // SET func_settings->data_output_loc
   err = nvs_set_str(func_settings_handle, "msg-link", func_settings->data_output_loc);
   if (err != ESP_OK)
   {
-    printf("Error saving data_out_loc: %s\n", esp_err_to_name(err));
+    LOGI("", "Error saving data_out_loc: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     return false;
   }
@@ -239,7 +240,7 @@ bool set_nvs_func_settings(device_func_status_t *func_settings)
   err = nvs_set_u16(func_settings_handle, "scn-interval", func_settings->scan_interval);
   if (err != ESP_OK)
   {
-    printf("Error saving scan_interval: %s\n", esp_err_to_name(err));
+    LOGI("", "Error saving scan_interval: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     return false;
   }
@@ -248,14 +249,14 @@ bool set_nvs_func_settings(device_func_status_t *func_settings)
   err = nvs_set_u8(func_settings_handle, "trigger", func_settings->trigger);
   if (err != ESP_OK)
   {
-    printf("Error saving trigger: %s\n", esp_err_to_name(err));
+    LOGI("", "Error saving trigger: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     return false;
   }
   err = nvs_set_str(func_settings_handle, "auth_key", func_settings->auth_key);
   if (err != ESP_OK)
   {
-    printf("Error saving the auth_key\n");
+    LOGI("", "Error saving the auth_key\n");
     nvs_close(func_settings_handle);
   }
 
@@ -263,7 +264,7 @@ bool set_nvs_func_settings(device_func_status_t *func_settings)
   err = nvs_commit(func_settings_handle);
   if (err != ESP_OK)
   {
-    printf("Failed to commit settings to NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Failed to commit settings to NVS: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     return false;
   }
@@ -278,21 +279,21 @@ bool nvs_save_scan_mode()
 {
   if (func_settings_handle != NULL)
   {
-    printf("Nvs handle is busy in another task\n");
+    LOGI("", "Nvs handle is busy in another task\n");
     return false;
   }
 
   esp_err_t err = nvs_open("func_settings", NVS_READWRITE, &func_settings_handle);
   if (err != ESP_OK)
   {
-    printf("Error opening NVS handle: %s\n", esp_err_to_name(err));
+    LOGI("", "Error opening NVS handle: %s\n", esp_err_to_name(err));
     return false;
   }
 
   err = nvs_set_blob(func_settings_handle, "scan_info", (const void *)&scan_info_, sizeof(scan_info_));
   if (err != ESP_OK)
   {
-    printf("Failed to write scan_info in NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Failed to write scan_info in NVS: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     func_settings_handle = NULL;
     return false;
@@ -301,7 +302,7 @@ bool nvs_save_scan_mode()
   err = nvs_commit(func_settings_handle);
   if (err != ESP_OK)
   {
-    printf("Failed to commit in NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Failed to commit in NVS: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     func_settings_handle = NULL;
     return false;
@@ -316,14 +317,14 @@ bool nvs_load_scan_mode()
 {
   if (func_settings_handle != NULL)
   {
-    printf("Nvs handle is busy in another task\n");
+    LOGI("", "Nvs handle is busy in another task\n");
     return false;
   }
 
   esp_err_t err = nvs_open("func_settings", NVS_READONLY, &func_settings_handle);
   if (err != ESP_OK)
   {
-    printf("Failed to open NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Failed to open NVS: %s\n", esp_err_to_name(err));
     return false;
   }
 
@@ -331,7 +332,7 @@ bool nvs_load_scan_mode()
   err = nvs_get_blob(func_settings_handle, "scan_info", &scan_info_, &required_size);
   if (err != ESP_OK)
   {
-    printf("Failed to read scan_info from NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Failed to read scan_info from NVS: %s\n", esp_err_to_name(err));
     nvs_close(func_settings_handle);
     func_settings_handle = NULL;
     return false;
@@ -353,19 +354,19 @@ uint32_t load_increment_store_restart_counter_till_last_flash(void)
   err = nvs_flash_init();
   if (err != ESP_OK)
   {
-    printf("Error initializing NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Error initializing NVS: %s\n", esp_err_to_name(err));
     return -1;
   }
-  printf("NVS initialized successfully\n");
+  LOGI("", "NVS initialized successfully\n");
 
   // Open NVS handle
   err = nvs_open("default_pass", NVS_READWRITE, &nvs_handle);
   if (err != ESP_OK)
   {
-    printf("Error opening NVS handle: %s\n", esp_err_to_name(err));
+    LOGI("", "Error opening NVS handle: %s\n", esp_err_to_name(err));
     return -1;
   }
-  printf("NVS handle opened successfully\n");
+  LOGI("", "NVS handle opened successfully\n");
 
   // Read the counter
   size_t required_size = sizeof(counter);
@@ -374,46 +375,46 @@ uint32_t load_increment_store_restart_counter_till_last_flash(void)
   {
     // Counter not found, initialize it to 0
     counter = 0;
-    printf("Counter not found, initializing to 0\n");
+    LOGI("", "Counter not found, initializing to 0\n");
   }
   else if (err != ESP_OK)
   {
-    printf("Error reading counter: %s\n", esp_err_to_name(err));
+    LOGI("", "Error reading counter: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return -1;
   }
   else
   {
-    printf("Counter found, current value: %lu\n", counter);
+    LOGI("", "Counter found, current value: %lu\n", counter);
   }
 
   // Increment the counter
   counter++;
-  printf("Incremented counter value: %lu\n", counter);
+  LOGI("", "Incremented counter value: %lu\n", counter);
 
   // Write the counter back to NVS
   err = nvs_set_u32(nvs_handle, "restart_c", counter);
   if (err != ESP_OK)
   {
-    printf("Error writing counter: %s\n", esp_err_to_name(err));
+    LOGI("", "Error writing counter: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return -1;
   }
-  printf("Counter written to NVS successfully\n");
+  LOGI("", "Counter written to NVS successfully\n");
 
   // Commit written value
   err = nvs_commit(nvs_handle);
   if (err != ESP_OK)
   {
-    printf("Error committing NVS: %s\n", esp_err_to_name(err));
+    LOGI("", "Error committing NVS: %s\n", esp_err_to_name(err));
     nvs_close(nvs_handle);
     return -1;
   }
-  printf("NVS committed successfully\n");
+  LOGI("", "NVS committed successfully\n");
 
   // Close NVS handle
   nvs_close(nvs_handle);
-  printf("NVS handle closed successfully\n");
+  LOGI("", "NVS handle closed successfully\n");
 
   return counter;
 }
