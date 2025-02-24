@@ -22,7 +22,7 @@
 #include "server.h"
 #include "driver.h"
 #include "global_status.h"
-#include "http_message.h"
+#include "socket_message.h"
 #include "settings.h"
 #include "scan_task.h"
 

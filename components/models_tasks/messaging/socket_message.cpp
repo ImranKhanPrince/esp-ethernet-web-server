@@ -1,4 +1,4 @@
-#include "http_message.h"
+#include "socket_message.h"
 
 #include "esp_http_client.h"
 #include "settings.h"
@@ -140,23 +140,18 @@ int create_socket_connection(const char *host, uint16_t port)
 
   // Connect
   int err = connect(sock, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
-  if (err != 0)
+  if (err != ESP_OK)
   {
     ESP_LOGE(TAG, "Socket connect failed errno=%d", errno);
     close(sock);
     return -1;
   }
-  else if (err == ESP_OK)
-  {
-    // xTaskCreate()
-    // start_socket_listener_task();
-  }
-
   return sock;
 }
 
 static void socket_listener_task(void *pvParameters)
 {
+  // TODO: LATER: make a struct named location with ip and port and call a function to fill that from string.
   char *data_output_loc = functionality_status_.data_output_loc;
   char host[64];
   int port = 0;

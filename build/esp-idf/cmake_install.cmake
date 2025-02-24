@@ -559,17 +559,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
-  include("C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/uhf_operations/cmake_install.cmake")
+  include("C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/models_tasks/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

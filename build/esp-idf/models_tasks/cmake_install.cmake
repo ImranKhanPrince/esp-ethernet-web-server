@@ -1,4 +1,4 @@
-# Install script for directory: C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/settings_model
+# Install script for directory: C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/components/models_tasks
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

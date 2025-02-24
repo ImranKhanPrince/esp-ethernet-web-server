@@ -83,7 +83,5 @@ C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/main/libmain.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/ethernet_init/libethernet_init.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/j4210u-driver_esp5.3/libj4210u-driver_esp5.3.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/libglobal_status.a
-C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/settings_model/libsettings_model.a
-C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/messaging/libmessaging.a
-C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/uhf_operations/libuhf_operations.a
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/models_tasks/libmodels_tasks.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/views/libviews.a
