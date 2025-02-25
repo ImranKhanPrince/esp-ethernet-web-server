@@ -5017,7 +5017,7 @@
                         ],
                         "depends_on": "EXAMPLE_USE_INTERNAL_ETHERNET",
                         "help": "Select the Ethernet PHY device to use in the example.",
-                        "id": "example-ethernet-configuration-internal-emac-ethernet-phy-device",
+                        "id": "peripheral-configuration-internal-emac-ethernet-phy-device",
                         "name": "EXAMPLE_ETH_PHY_MODEL",
                         "title": "Ethernet PHY Device",
                         "type": "choice"
@@ -5130,7 +5130,7 @@
                         ],
                         "depends_on": "EXAMPLE_USE_SPI_ETHERNET",
                         "help": "Select which kind of Ethernet will be used in the example.",
-                        "id": "example-ethernet-configuration-spi-ethernet-ethernet-spi",
+                        "id": "peripheral-configuration-spi-ethernet-ethernet-spi",
                         "name": "EXAMPLE_ETHERNET_TYPE_SPI",
                         "title": "Ethernet SPI",
                         "type": "choice"
@@ -5276,8 +5276,8 @@
             }
         ],
         "depends_on": null,
-        "id": "example-ethernet-configuration",
-        "title": "Example Ethernet Configuration",
+        "id": "peripheral-configuration",
+        "title": "Peripheral Configuration",
         "type": "menu"
     },
     {

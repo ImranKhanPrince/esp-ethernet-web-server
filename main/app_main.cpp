@@ -1,12 +1,3 @@
-/* Ethernet Basic Example
-
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
 #include <stdio.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -28,6 +19,7 @@
 #include "socket_message.h"
 #include "settings.h"
 #include "scan_task.h"
+#include "sdmmc_helper.h"
 
 #define UHF_MODULE_CHECK_TASK_SIZE 4 * 1024
 // TODO: this will come from CMAKELIST define;
@@ -240,6 +232,8 @@ extern "C" void app_main(void)
 
     print_device_func_settings(&functionality_status_);
 
-    // functionality_status_.scan_interval = 800;
-    // set_nvs_func_settings(&functionality_status_);
+    // TODO: LATER: WAit for 30s and see if internet is connected or not
+    sd_init_mount("/sdcard");
+    char buf[1000];
+    sd_read_json_file("/sdcard/hello.txt", buf, sizeof(buf));
 }

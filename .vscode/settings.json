@@ -83,7 +83,9 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "global_status.h": "c"
+        "global_status.h": "c",
+        "esp_log.h": "c",
+        "sdmmc_helper.h": "c"
     },
     "todo-tree.tree.showCountsInTree": true,
     "vim.useCtrlKeys": true

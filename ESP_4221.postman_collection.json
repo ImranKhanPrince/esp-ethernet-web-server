@@ -1,0 +1,327 @@
+{
+	"info": {
+		"_postman_id": "5e57b81a-9372-42ea-a1f8-16bf9110f7be",
+		"name": "ESP_4221",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20997000"
+	},
+	"item": [
+		{
+			"name": "api root",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET device settings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/settings",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST device settings",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"auth_key\": \"1234\",\r\n    \"data\": {\r\n    \"rf_band\": \"U\", \r\n    \"rf_power\": 5, \r\n    \"rf_scan_period\": 300, \r\n    \"device_beep\": true\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/settings",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"settings"
+					]
+				},
+				"description": "The ip might change"
+			},
+			"response": []
+		},
+		{
+			"name": "GET functionality settings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/func_settings",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"func_settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST functionality settings",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\": \"0123456789\",\r\n    \"data\": {\r\n        \"scan_interval\": 2000,\r\n        \"data_output_loc\": \"http://192.168.1.15:3001/\", // http://192.168.1.12:3001 or none\r\n        \"trigger\": \"NONE\" ,// NONE, TRIG1, TRIG2, TRIG1_OR_TRIG2_INTERRUPT, TRIG1_AND_TRIG2_INTERRUPT\r\n        \"new_pass\": \"0123456789\", \r\n        \"auth_key\": \"1234\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/func_settings",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"func_settings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST scan",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"auth_key\": \"1234\",\r\n    \"data\": {\r\n        \"command\": 1, // scan once(0), start const scan(1), stop cont scan(2), \r\n        \"params\": {\r\n            \"filter\": false,\r\n            \"offset\": 0, //int- 2char - 1hex. byte offset(where the mask starts)\r\n            \"data\": \"E2000019340901830570\" //hex string\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/scan",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"scan"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEN Memory Read/Write",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "////READ TID\r\n// {\r\n//     \"auth_key\": \"1234\",\r\n//     \"data\":{\r\n//     \"command\": \"READ\", // mem read(0), mem write(1)\r\n//     \"params\": {\r\n//         \"memtype\": \"TID\", //  TID, USR\r\n//         \"epc\": \"ABCDFFFF340901820570DDB4\"\r\n//     }\r\n//     }\r\n// }\r\n////READ USERMEM\r\n// {\r\n//     \"auth_key\": \"1234\",\r\n//     \"data\":{\r\n//     \"command\": \"READ\", // mem read(0), mem write(1)\r\n//     \"params\": {\r\n//         \"memtype\": \"USR\", //  TID, USR\r\n//         \"epc\": \"ABCDFFFF340901820570DDB4\",\r\n//         \"windex\": 30, \r\n//         \"wnum\": 1\r\n//     }\r\n//     }\r\n// }\r\n//// WRITE EPC\r\n// {\r\n//     \"auth_key\": \"1234\",\r\n//     \"data\":{\r\n//     \"command\": \"WRITE\", // mem read(0), mem write(1)\r\n//     \"params\": {\r\n//         \"memtype\": \"EPC\",\r\n//         \"epc\": \"E2000019340901830570DDBC\",\r\n//         \"new_epc\": \"E2000019340901830570DDB2\"\r\n//     }\r\n//     }\r\n// }\r\n\r\n////WRITE USER MEM\r\n{\r\n    \"auth_key\": \"1234\",\r\n    \"data\": {\r\n        \"command\": \"WRITE\",\r\n        \"params\": {\r\n            \"memtype\": \"USR\",\r\n            \"epc\": \"ABAB2222CCCCBBBB0570DDC9\",\r\n            \"data\": \"AB\",\r\n            \"wsize\": 1,\r\n            \"windex\": 0\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/memory",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"memory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEN TID Read",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "////READ TID\r\n{\r\n    \"auth_key\": \"1234\",\r\n    \"data\":{\r\n    \"command\": \"READ\", // mem read(0), mem write(1)\r\n    \"params\": {\r\n        \"memtype\": \"TID\", //  TID, USR\r\n        \"epc\": \"ABCDFFFF340901820570DDB4\"\r\n    }\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/memory",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"memory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEN EPC Write",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "////READ TID\r\n// {\r\n//     \"auth_key\": \"1234\",\r\n//     \"data\":{\r\n//     \"command\": \"READ\", // mem read(0), mem write(1)\r\n//     \"params\": {\r\n//         \"memtype\": \"TID\", //  TID, USR\r\n//         \"epc\": \"ABCDFFFF340901820570DDB4\"\r\n//     }\r\n//     }\r\n// }\r\n////READ USERMEM\r\n// {\r\n//     \"auth_key\": \"1234\",\r\n//     \"data\":{\r\n//     \"command\": \"READ\", // mem read(0), mem write(1)\r\n//     \"params\": {\r\n//         \"memtype\": \"USR\", //  TID, USR\r\n//         \"epc\": \"ABCDFFFF340901820570DDB4\",\r\n//         \"windex\": 30, \r\n//         \"wnum\": 1\r\n//     }\r\n//     }\r\n// }\r\n//// WRITE EPC\r\n// {\r\n//     \"auth_key\": \"1234\",\r\n//     \"data\":{\r\n//     \"command\": \"WRITE\", // mem read(0), mem write(1)\r\n//     \"params\": {\r\n//         \"memtype\": \"EPC\",\r\n//         \"epc\": \"E2000019340901830570DDBC\",\r\n//         \"new_epc\": \"E2000019340901830570DDB2\"\r\n//     }\r\n//     }\r\n// }\r\n\r\n////WRITE USER MEM\r\n{\r\n    \"auth_key\": \"1234\",\r\n    \"data\": {\r\n        \"command\": \"WRITE\",\r\n        \"params\": {\r\n            \"memtype\": \"USR\",\r\n            \"epc\": \"ABAB2222CCCCBBBB0570DDC9\",\r\n            \"data\": \"AB\",\r\n            \"wsize\": 1,\r\n            \"windex\": 0\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/memory",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"memory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEN USR Read",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n////READ USERMEM\r\n{\r\n    \"auth_key\": \"1234\",\r\n    \"data\":{\r\n    \"command\": \"READ\", // mem read(0), mem write(1)\r\n    \"params\": {\r\n        \"memtype\": \"USR\", //  TID, USR\r\n        \"epc\": \"ABCDFFFF340901820570DDB4\",\r\n        \"windex\": 30, \r\n        \"wnum\": 1\r\n    }\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/memory",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"memory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GEN USR Write",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "////WRITE USER MEM\r\n{\r\n    \"auth_key\": \"1234\",\r\n    \"data\": {\r\n        \"command\": \"WRITE\",\r\n        \"params\": {\r\n            \"memtype\": \"USR\",\r\n            \"epc\": \"ABAB2222CCCCBBBB0570DDC9\",\r\n            \"data\": \"AAAA\",\r\n            \"wsize\": 1,\r\n            \"windex\": 0 // the intex of word theat is written\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{SERVER_IP}}/api/memory",
+					"protocol": "http",
+					"host": [
+						"{{SERVER_IP}}"
+					],
+					"path": [
+						"api",
+						"memory"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST from esp-> server",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "SERVER_IP",
+			"value": "192.168.1.11"
+		}
+	]
+}

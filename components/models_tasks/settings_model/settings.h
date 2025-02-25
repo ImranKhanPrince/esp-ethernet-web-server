@@ -46,6 +46,18 @@ typedef enum
   SET_DEVICE_SETTING_INVALID_SCAN_INTERVAL
 } SET_DEVICE_SETTING_STATUS;
 
+typedef enum
+{
+  WIFI,
+  ETHERNET
+} CONNECTIVITY_MODE;
+
+typedef enum
+{
+  STATIC,
+  DYNAMIC
+} IP_MODE;
+
 typedef struct
 {
   int device_id;        // Device ID
@@ -67,6 +79,9 @@ typedef struct
   char *data_output_loc; // need to use strdup and free // none, ip port, bluetooth, //TODO: make this a different struct that has ip, port, encryption key(different key for each ip). if ip is error then show it in display
   TRIGGER trigger;
   char auth_key[SIZE_OF_AUTH_KEY];
+  IP_MODE ip_mode;
+  char *ip_addr;
+  CONNECTIVITY_MODE connectivity_mode;
 } device_func_status_t; // rf module settings
 // TODO: IMPORTANT: store encryption key here too and use password to set this settings.
 // data_output - array[sd, link{ip, port, encryption_key}]

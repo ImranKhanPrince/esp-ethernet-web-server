@@ -80,8 +80,8 @@ C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/perfmon/libperfmon.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/spiffs/libspiffs.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/wifi_provisioning/libwifi_provisioning.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/main/libmain.a
-C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/ethernet_init/libethernet_init.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/j4210u-driver_esp5.3/libj4210u-driver_esp5.3.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/global_status/libglobal_status.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/models_tasks/libmodels_tasks.a
+C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/peripheral_helper/libperipheral_helper.a
 C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/views/libviews.a
