@@ -417,6 +417,8 @@ void rtos_cont_scan_task(void *pvParams)
     // xSemaphoreGive(mutex_continuous_scan_busy);
   }
   int scan_interval_ms = MAX(functionality_status_.scan_interval, 100);
+  LOGI("scan_task.cpp", "Scan Interval:%d", scan_interval_ms);
+  // TODO: BUG: doesn't regards this time even after setting it.
   vTaskDelay(scan_interval_ms / portTICK_PERIOD_MS);
   ++i;
   // }
