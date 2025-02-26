@@ -25,6 +25,7 @@ device_func_status_t functionality_status_ = {
     .data_output_loc = strdup("http://192.168.1.12:3001/"),
     .trigger = NO_TRIGGER,
     .auth_key = "1234",
+    .ip_mode = DYNAMIC,
     .ip_addr = strdup("192.168.1.137"),
     .connectivity_mode = WIFI};
 

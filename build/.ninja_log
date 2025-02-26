@@ -2449,3 +2449,5 @@
 38420	38915	7621848934120706	C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/.bin_timestamp	8495df454a1b68f4
 38915	39054	7621848934170708	esp-idf/esptool_py/CMakeFiles/app_check_size	d5bc1b703a284776
 38915	39054	7621848934170708	C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/esp-idf/esptool_py/CMakeFiles/app_check_size	d5bc1b703a284776
+77	21290447	7621640996909105	CMakeFiles/confserver	4d7c2b8f90a3ea19
+77	21290447	7621640996909105	C:/WORK/Firmware/ESP32_PoE_Ethernet_IDFv5.3/build/CMakeFiles/confserver	4d7c2b8f90a3ea19

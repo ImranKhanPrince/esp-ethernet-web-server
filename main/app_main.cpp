@@ -235,5 +235,5 @@ extern "C" void app_main(void)
     // TODO: LATER: WAit for 30s and see if internet is connected or not
     sd_init_mount("/sdcard");
     char buf[1000];
-    sd_read_json_file("/sdcard/hello.txt", buf, sizeof(buf));
+    sd_read_json_file("/sdcard/setup_info.txt", buf, sizeof(buf));
 }
